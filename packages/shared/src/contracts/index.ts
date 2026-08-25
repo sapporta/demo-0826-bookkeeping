@@ -1,6 +1,7 @@
-// Barrel for ts-rest contracts. Add one file per feature alongside
-// `hello.ts` and re-export its router from here so `packages/shared/src/index.ts`
-// can pick everything up in one place.
+// Barrel for ts-rest contracts and the wire types beside them. One file per
+// feature; `packages/shared/src/index.ts` re-exports everything from here.
 
-export { helloContract } from "./hello.js";
-export { publicApiSampleContract } from "./public-api-sample.js";
+export * from "./accounts.js";
+export * from "./money.js";
+export * from "./ledger.js";
+export * from "./reports.js";

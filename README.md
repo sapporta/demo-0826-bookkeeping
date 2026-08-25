@@ -21,6 +21,7 @@ URL, `http://localhost:5391`, in a browser.
 - `pnpm dev` - start backend and frontend in watch mode
 - `pnpm seed` - fill the development database with sample data from `packages/api/seed.ts`
 - `pnpm typecheck` - typecheck the shared package, API, and frontend
+- `pnpm --filter ./packages/api test` - run the ledger and report unit tests
 - `pnpm build` - typecheck the workspace, then compile the shared package, API, and frontend
 - `pnpm start` - run the production server after `pnpm build`
 - `pnpm exec sapporta endpoints list` - inspect the running API

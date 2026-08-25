@@ -1,17 +1,19 @@
 /**
  * App-specific API routes.
  *
- * Sapporta creates standard APIs for tables in `schema/`. Mount custom APIs,
- * such as reports and workflows, in `loadApp()` below. The app is already
- * scoped to `/api`, so `app.route("/bank", bankApi)` serves `/api/bank`.
+ * Sapporta creates standard APIs for tables in `schema/`. Custom APIs — the
+ * entry workflow and the reports — are mounted in `loadApp()` below. The app
+ * is already scoped to `/api`, so a contract path of `/transactions` serves
+ * `/api/transactions`.
  */
 import type {
   ProjectDbConnection,
   SapportaEnv,
   TsRestApi,
 } from "@sapporta/server";
-import helloApi from "./app/hello.js";
-import publicApiSample from "./app/public-api-sample.js";
+import { Temporal } from "@sapporta/shared/temporal";
+import { createReportsApi } from "./app/reports/index.js";
+import transactionsApi from "./app/transactions.js";
 import type { SapportaMailer } from "./mailer.js";
 import type { PublicRoutePattern } from "./project-auth/index.js";
 
@@ -20,30 +22,18 @@ export interface LoadAppOptions {
   mailer: SapportaMailer;
 }
 
-// Files in `app/` are not exposed until they are mounted here.
-export function loadApp(app: TsRestApi<SapportaEnv>, _options: LoadAppOptions) {
-  app.route("/", helloApi);
-  app.route("/", publicApiSample);
+/** `route()` serves the handlers; `extend()` publishes them to OpenAPI. */
+function mountApi(app: TsRestApi<SapportaEnv>, api: TsRestApi<SapportaEnv>) {
+  app.route("/", api);
+  app.extend(api);
 }
 
-// These custom routes may be called without signing in.
-export const publicApiRoutes = [
-  { method: "GET", path: "/api/public-api-sample" },
-] as const satisfies readonly PublicRoutePattern[];
+// Files in `app/` are not exposed until they are mounted here.
+export function loadApp(app: TsRestApi<SapportaEnv>, _options: LoadAppOptions) {
+  mountApi(app, transactionsApi);
+  mountApi(app, createReportsApi({ now: () => Temporal.Now.instant() }));
+}
 
-/**
- * PUBLIC ROUTE WARNING
- *
- * Routes in `publicApiRoutes` can be reached by anonymous visitors. Add a path
- * here only when the feature is intentionally public. The handler must still
- * read `c.get("auth")`, call `forbidUnless(c, auth.ability.can(...))`, and use
- * row security for any table-backed data.
- *
- * For table-backed public pages, import the table definition and compose the
- * route predicate with row security:
- *
- *   const auth = c.get("auth");
- *   forbidUnless(c, auth.ability.can("read-published", "quotes"));
- *   const access = auth.rowSecurity.forTable(quotes);
- *   const where = access.ownedRows(eq(quotesTable.published, true));
- */
+// These custom routes may be called without signing in. The books are private,
+// so nothing is listed.
+export const publicApiRoutes = [] as const satisfies readonly PublicRoutePattern[];

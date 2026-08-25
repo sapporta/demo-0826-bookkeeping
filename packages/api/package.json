@@ -19,7 +19,9 @@
     "predb:studio": "pnpm --filter bookkeeping-shared build",
     "db:studio": "drizzle-kit studio",
     "pretypecheck": "pnpm --filter bookkeeping-shared build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pretest": "pnpm --filter bookkeeping-shared build",
+    "test": "vitest run"
   },
   "dependencies": {
     "@casl/ability": "7.0.1",

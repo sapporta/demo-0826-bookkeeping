@@ -1,21 +1,49 @@
-import { lazy, Suspense, type ReactElement } from "react";
+import { lazy, Suspense } from "react";
 import { Route } from "react-router-dom";
 import type { Navigation } from "@sapporta/frontend/shell";
 import { AppPage } from "@sapporta/frontend/layout";
-import { House } from "lucide-react";
+import {
+  BookOpen,
+  ChartNoAxesColumn,
+  House,
+  Landmark,
+  ListOrdered,
+  PiggyBank,
+  Scale,
+  Settings2,
+  Store,
+  Wallet,
+  PenLine,
+} from "lucide-react";
 
 /**
- * Add the application's routes and navigation here. `SapportaApp.tsx` combines
- * them with Sapporta's account and table routes. Table links are added from the
- * loaded schema.
+ * The application's routes and navigation. `SapportaApp.tsx` combines them
+ * with Sapporta's account and table routes.
  */
 const homePath = "/";
 
-const PublicPage = lazy(() =>
-  import("./PublicPage").then((m) => ({ default: m.PublicPage })),
-);
-
 const Home = lazy(() => import("./Home").then((m) => ({ default: m.Home })));
+const Advanced = lazy(() =>
+  import("./Advanced").then((m) => ({ default: m.Advanced })),
+);
+const EntryForm = lazy(() =>
+  import("./entries/EntryForm").then((m) => ({ default: m.EntryForm })),
+);
+const Journal = lazy(() =>
+  import("./reports/Journal").then((m) => ({ default: m.Journal })),
+);
+const Balances = lazy(() =>
+  import("./reports/Balances").then((m) => ({ default: m.Balances })),
+);
+const CashFlow = lazy(() =>
+  import("./reports/CashFlow").then((m) => ({ default: m.CashFlow })),
+);
+const Spending = lazy(() =>
+  import("./reports/Spending").then((m) => ({ default: m.Spending })),
+);
+const Register = lazy(() =>
+  import("./reports/Register").then((m) => ({ default: m.Register })),
+);
 
 function RouteFallback() {
   return (
@@ -28,72 +56,68 @@ function RouteFallback() {
   );
 }
 
-// Add protected domain screens here with their navigation items.
+function screen(element: React.ReactNode) {
+  return <Suspense fallback={<RouteFallback />}>{element}</Suspense>;
+}
+
+// The everyday path: record entries, review the month, check balances. Set-up
+// pages come after the work they support; Advanced lists everything else.
 export const appNavigation: Navigation = [
   {
-    label: "Views",
+    label: "Record",
     items: [
-      {
-        label: "Home",
-        icon: House,
-        to: homePath,
-      },
+      { label: "Home", icon: House, to: homePath },
+      { label: "New entry", icon: PenLine, to: "/transactions/new" },
+      { label: "Transactions", icon: ListOrdered, to: "/transactions" },
     ],
+  },
+  {
+    label: "Review",
+    items: [
+      { label: "Spending", icon: ChartNoAxesColumn, to: "/reports/spending" },
+      { label: "Cash flow", icon: Wallet, to: "/reports/cash-flow" },
+      { label: "Balances", icon: Scale, to: "/reports/balances" },
+      { label: "Account register", icon: BookOpen, to: "/reports/register" },
+    ],
+  },
+  {
+    label: "Set up",
+    items: [
+      { label: "Accounts", icon: Landmark, to: "/tables/accounts" },
+      { label: "Payees", icon: Store, to: "/tables/payees" },
+      { label: "Budgets", icon: PiggyBank, to: "/tables/budgets" },
+    ],
+  },
+  {
+    label: "More",
+    items: [{ label: "Advanced", icon: Settings2, to: "/advanced" }],
   },
 ];
 
-// The screen at `/`. It opens for signed-in users, and it is where they arrive
-// after signing in. Replace `Home` with the screen your app should open on.
-export const appHomeRoute = (
-  <Route
-    index
-    element={
-      <Suspense fallback={<RouteFallback />}>
-        <Home />
-      </Suspense>
-    }
-  />
-);
+// The screen at `/`. It opens for signed-in users, and it is where they
+// arrive after signing in.
+export const appHomeRoute = <Route index element={screen(<Home />)} />;
 
-// Set this to an index route when anyone should be able to read `/`, such as a
-// landing page for visitors who have not signed in. It then opens `/` in place
-// of `appHomeRoute`, so give the signed-in home screen a path of its own in
-// `appProtectedRoutes` when the app needs both.
-export const appPublicHomeRoute: ReactElement | null = null;
+// Set this to an index route when anyone should be able to read `/`. The
+// books are private, so it stays empty.
+export const appPublicHomeRoute: React.ReactElement | null = null;
 
 // Routes here render without requiring a signed-in session.
-export const appPublicRoutes = (
-  <>
-    {/* PUBLIC: anyone can load this page. Keep its data intentionally public. */}
-    <Route
-      path="public"
-      element={
-        <Suspense fallback={<RouteFallback />}>
-          <PublicPage />
-        </Suspense>
-      }
-    />
-  </>
-);
+export const appPublicRoutes = <></>;
 
 // Routes here render inside the authenticated app shell.
 export const appProtectedRoutes = (
   <>
-    {/* Standard screens can use `AppPage` for the usual fixed header and
-        scrolling content area. Its `title` also names the browser tab. Other
-        screens can choose their own height and scrolling behavior; `AppShell`
-        keeps its sidebar control available, and `usePageTitle` from
-        `@sapporta/frontend/shell` names the tab for screens without the
-        standard header.
-
-        Add protected app routes here, e.g.:
-        <Route
-          path="views/imports"
-          element={
-            <Suspense fallback={<RouteFallback />}>
-              <Imports />
-            </Suspense>
-          }
-        /> */}
+    <Route path="transactions" element={screen(<Journal />)} />
+    <Route path="transactions/new" element={screen(<EntryForm mode="new" />)} />
+    <Route
+      path="transactions/:id/edit"
+      element={screen(<EntryForm mode="edit" />)}
+    />
+    <Route path="reports/balances" element={screen(<Balances />)} />
+    <Route path="reports/cash-flow" element={screen(<CashFlow />)} />
+    <Route path="reports/spending" element={screen(<Spending />)} />
+    <Route path="reports/register" element={screen(<Register />)} />
+    <Route path="advanced" element={screen(<Advanced />)} />
   </>
 );

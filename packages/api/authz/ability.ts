@@ -1,26 +1,37 @@
 import { AbilityBuilder, createMongoAbility } from "@casl/ability";
 import type { AppAbility, AppAuthFacts } from "./types.js";
 
+/** The application tables every member of a workspace works with. */
+const LEDGER_TABLES = [
+  "accounts",
+  "payees",
+  "transactions",
+  "postings",
+  "budgets",
+] as const;
+
 /**
  * Defines what this requester may do.
  *
  * No rule means no access. Generated table routes ask for actions such as
- * `read`, `create`, and `export` on the table name. Custom routes can use
- * subjects such as `quote_publication`. Row access is defined separately in
- * `request-data-authority.ts`.
+ * `read`, `create`, and `export` on the table name. The entry workflow asks
+ * for `run` on `ledger_entry`, and every report asks for `read` on `reports`.
+ * Row access is defined separately in `request-data-authority.ts`.
  */
 export function buildAbility(ctx: AppAuthFacts): AppAbility {
   const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
-  // PUBLIC: this sample route is intentionally available to anonymous visitors.
-  // Do not add real data subjects here unless the feature is meant to be public.
-  can("read", "public_api_sample");
-
   if (ctx.principal.kind === "user") {
-    can("read", "hello");
     can("read", "agent_access_token");
     can("create", "agent_access_token");
     can("delete", "agent_access_token");
+
+    // Every member keeps the same books: they read everything, record entries,
+    // and maintain the chart of accounts, payees, and budgets.
+    can(["read", "export"], [...LEDGER_TABLES]);
+    can(["create", "update", "delete"], ["accounts", "payees", "budgets"]);
+    can("run", "ledger_entry");
+    can("read", "reports");
   }
 
   if (

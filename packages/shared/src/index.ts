@@ -4,6 +4,6 @@
 // re-declared on both sides of the client/server boundary and drift
 // silently when one side changes.
 
-export const APP_NAME = "bookkeeping";
+export const APP_NAME = "Bookkeeping";
 
 export * from "./contracts/index.js";

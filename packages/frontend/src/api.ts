@@ -3,22 +3,17 @@
 // Each client uses the same contract as its server handler. `getApiBase` picks
 // the local or deployed API URL. Methods return the 2xx body and throw
 // `ApiError` for other responses.
-//
-// Usage:
-//   import { customApi } from "./api";
-//   const { message } = await customApi.hello();
 
 import { createApiClient } from "@sapporta/shared/client";
 import { getApiBase } from "@sapporta/frontend/platform";
-import {
-  helloContract,
-  publicApiSampleContract,
-} from "bookkeeping-shared";
+import { ledgerContract, reportsContract } from "bookkeeping-shared";
 
-export const customApi = createApiClient(helloContract, {
+/** Record, read, replace, and delete entries. */
+export const ledgerApi = createApiClient(ledgerContract, {
   baseUrl: getApiBase,
 });
 
-export const publicApi = createApiClient(publicApiSampleContract, {
+/** Balances, cash flow, spending, the account register, and the journal. */
+export const reportsApi = createApiClient(reportsContract, {
   baseUrl: getApiBase,
 });

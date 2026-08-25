@@ -12,7 +12,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <SapportaApp />
+        <SapportaApp showFrameworkNavigation={false} />
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>,

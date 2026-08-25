@@ -10,6 +10,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["*.ts", "app", "project-auth", "schema"],
-  "exclude": ["dist"]
+  "include": [
+    "*.ts",
+    "app",
+    "authz",
+    "modules",
+    "project-auth",
+    "schema"
+  ],
+  "exclude": [
+    "dist",
+    "**/*.test.ts"
+  ]
 }
