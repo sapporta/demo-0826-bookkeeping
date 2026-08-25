@@ -54,6 +54,11 @@ packages/shared/    API contracts and types shared by backend and frontend
   loads the app from Vite, so it carries `SAPPORTA_FRONTEND_PORT`; a deployment
   sets it to its own domain, which has no relation to either port above.
 - `SAPPORTA_MAIL_TRANSPORT=stream` prints development emails to the API console.
+- `SAPPORTA_DEMO_USER_EMAIL` serves every request that carries no session
+  cookie or bearer token as the account holding that address, so this demo
+  opens straight into the books with nothing to sign in to. It is set to
+  `test@example.com`, the sample-data account `pnpm seed` creates. Remove the
+  line to require sign-in; a deployment holding real data never sets it.
 
 ## Running beside other Sapporta projects
 

@@ -15,12 +15,18 @@ import {
   sapportaProtectedRoutes,
   sapportaPublicRoutes,
 } from "./SapportaRoutes";
+import { DemoAccountStatus } from "./DemoAccountStatus";
 
 /**
  * This component joins the application UI with Sapporta's supplied UI.
  * `BootLoader` loads the session and table metadata. `AppShell` renders the
  * layout and table navigation. The route tree combines `App.tsx` with the
  * account and table pages in `SapportaRoutes.tsx`.
+ *
+ * `sidebarFooter` replaces the account menu Sapporta puts under the
+ * navigation with an account block that links to the profile page, because
+ * this demo signs everyone in as one account and has no sign-out to offer.
+ * See `DemoAccountStatus.tsx`.
  *
  * `/` opens the home page behind `AuthGate`, so a visitor without a session
  * goes to the sign-in page and returns to `/` afterwards. An app that opens `/`
@@ -50,6 +56,7 @@ export function SapportaApp({
             <AppShell
               navigation={appNavigation}
               showFrameworkNavigation={showFrameworkNavigation}
+              sidebarFooter={<DemoAccountStatus />}
             />
           </BootLoader>
         }

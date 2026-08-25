@@ -21,6 +21,7 @@ export interface ProjectAuthEnv {
   publicAppUrl: PublicAppUrl;
   trustedOrigins: Origin[];
   requireVerifiedEmail: boolean;
+  demoUserEmail: string | null;
   healthPolicy: HealthPolicy;
   openapiPolicy: OpenApiPolicy;
   mail: ProjectMailConfig;
@@ -64,6 +65,7 @@ export function readProjectAuthEnv(
       ),
       nodeEnv: env.NODE_ENV,
     }),
+    demoUserEmail: readDemoUserEmail(env),
     healthPolicy: readHealthPolicy(env.SAPPORTA_HEALTH_POLICY),
     openapiPolicy: readOpenApiPolicy(env.SAPPORTA_OPENAPI_POLICY),
     mail: readMailConfig(env),
@@ -78,6 +80,28 @@ export function isEmailVerificationRequired({
   nodeEnv: string | undefined;
 }): boolean {
   return explicitRequirement ?? nodeEnv === "production";
+}
+
+/**
+ * The account a request that carries no credential is served as.
+ *
+ * Set, this address signs the whole API in: every request without a session
+ * cookie or a bearer token is answered as this account, and the sign-in pages
+ * become unreachable because nothing ever asks for them. That is what a public
+ * demo wants and what no other deployment does, so the setting has to be
+ * granted rather than merely not withheld - an environment that never heard of
+ * `SAPPORTA_DEMO_USER_EMAIL` requires sign-in, which is the behavior every
+ * deployment gets by default.
+ *
+ * Unlike `SAPPORTA_ALLOW_SAMPLE_DATA_SEEDING`, this deliberately still works
+ * under `NODE_ENV=production`: a demo on a public site is a production
+ * deployment, and refusing there would leave the setting useful only where it
+ * is not needed. Naming an address is the whole grant, so an environment file
+ * that carries this line is saying the data behind it is sample data.
+ */
+function readDemoUserEmail(env: NodeJS.ProcessEnv): string | null {
+  const email = env.SAPPORTA_DEMO_USER_EMAIL?.trim();
+  return email ? email : null;
 }
 
 function readMailConfig(env: NodeJS.ProcessEnv): ProjectMailConfig {

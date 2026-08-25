@@ -167,6 +167,7 @@ export function createProjectAuth({
       c,
       buildAbility,
       resolveRequestDataAuthority,
+      demoUserEmail: env.demoUserEmail,
     });
   return {
     auth,

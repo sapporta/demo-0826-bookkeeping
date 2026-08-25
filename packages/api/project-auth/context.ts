@@ -20,9 +20,11 @@ import type {
 import type { BetterAuthSessionApi } from "./better-auth.js";
 import {
   ensureActiveWorkspace,
+  ensureWorkspaceMembership,
   membershipFromRow,
   switchWorkspaceMembership,
 } from "./workspace.js";
+import { findUserByEmail } from "./user.js";
 import { authFailure } from "./errors.js";
 import { resolveBearerTokenPrincipal, TokenAuthError } from "./auth-tokens.js";
 
@@ -69,6 +71,13 @@ export interface ResolveSapportaAuthContextInput {
   c: Context<SapportaEnv>;
   buildAbility: BuildAbility<AppAbility, AppWorkspaceMembership>;
   resolveRequestDataAuthority: ResolveRequestDataAuthority;
+  /**
+   * The account to serve a request that carries no credential as, from
+   * `SAPPORTA_DEMO_USER_EMAIL`, or null to require sign-in. Read once at
+   * startup by `readProjectAuthEnv()`, which documents what naming an address
+   * here gives up.
+   */
+  demoUserEmail: string | null;
 }
 
 /**
@@ -81,7 +90,9 @@ export interface ResolveSapportaAuthContextInput {
  * Bearer tokens are checked first because they explicitly name the workspace
  * for this request. If neither credential is present, the request is anonymous;
  * public routes can still run, while private routes reject it before reading
- * application data.
+ * application data. A deployment that has named a demo account is the one
+ * exception: there, a request with no credential is served as that account
+ * instead of anonymously.
  */
 export async function resolveSapportaAuthContext(
   input: ResolveSapportaAuthContextInput,
@@ -90,6 +101,7 @@ export async function resolveSapportaAuthContext(
     input.auth,
     input.conn,
     input.headers,
+    input.demoUserEmail,
   );
   return authContextFrom({
     principal,
@@ -125,8 +137,19 @@ function authContextFrom(input: {
   });
 }
 
+/**
+ * Moves this session to another workspace it belongs to.
+ *
+ * This asks for everything the resolver above does except the demo account,
+ * because switching is a change to a stored session and a demo request has no
+ * session to change. A deployment that serves requests as a demo account
+ * therefore has one workspace, the demo account's, and this route answers that
+ * the caller must sign in first.
+ */
 export async function switchActiveWorkspace(
-  input: ResolveSapportaAuthContextInput & { workspaceId: string },
+  input: Omit<ResolveSapportaAuthContextInput, "demoUserEmail"> & {
+    workspaceId: string;
+  },
 ): Promise<SapportaAuthContext<AppAbility, AppWorkspaceMembership>> {
   const payload = await getSessionPayload(input.auth, input.headers);
   if (!payload) {
@@ -152,10 +175,18 @@ export async function switchActiveWorkspace(
   });
 }
 
+/**
+ * Names the caller of one request.
+ *
+ * `demoUserEmail` is a required argument rather than a defaulted one: it
+ * decides whether an unidentified caller is a stranger or the demo account,
+ * and a default would let a call site settle that question by saying nothing.
+ */
 export async function resolvePrincipal(
   auth: BetterAuthSessionApi,
   conn: ProjectDbConnection,
   headers: Headers,
+  demoUserEmail: string | null,
 ): Promise<AppPrincipal> {
   try {
     const bearerPrincipal = resolveBearerTokenPrincipal(conn, headers);
@@ -171,11 +202,45 @@ export async function resolvePrincipal(
   }
 
   const payload = await getSessionPayload(auth, headers);
-  if (!payload) return anonymousPrincipal();
+  if (!payload) {
+    return demoUserEmail
+      ? demoUserPrincipal(conn, demoUserEmail)
+      : anonymousPrincipal();
+  }
   const membership = ensureActiveWorkspace(conn, payload);
   return userPrincipal({
     user: userFromSessionPayload(payload),
     membership: membershipFromRow(membership),
+  });
+}
+
+/**
+ * The demo account, as a principal, with no credential to prove.
+ *
+ * The account is named by the deployment and not by the request, so a caller
+ * cannot ask to be served as somebody else by naming them. Once it is built,
+ * this principal is an ordinary one: the ability builder and
+ * `resolveRequestDataAuthority()` decide what it may do and which rows it may
+ * touch, exactly as they do for a person who signed in as this account.
+ *
+ * The workspace is the one the account works in, created on first use if the
+ * account has joined none - the same reading `pnpm seed` and any other script
+ * gets from `openScriptRuntime()`, so a demo request and a seed run write to
+ * one workspace rather than two.
+ */
+function demoUserPrincipal(
+  conn: ProjectDbConnection,
+  demoUserEmail: string,
+): AppPrincipal {
+  const user = findUserByEmail(conn, demoUserEmail);
+  if (!user) {
+    throw new Error(
+      `SAPPORTA_DEMO_USER_EMAIL names ${demoUserEmail}, but no account holds that address on this database. Run \`pnpm seed\` to create it, or unset the setting to require sign-in.`,
+    );
+  }
+  return userPrincipal({
+    user,
+    membership: membershipFromRow(ensureWorkspaceMembership(conn, user)),
   });
 }
 
