@@ -1,0 +1,49 @@
+{
+  "name": "bookkeeping-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "pnpm --filter bookkeeping-shared build",
+    "dev": "tsc-watch --onFirstSuccess \"node --import @sapporta/server/source-link-runtime --env-file=../../.env.development --watch dist/boot.js\"",
+    "prebuild": "pnpm --filter bookkeeping-shared build",
+    "build": "tsc",
+    "start": "node --import @sapporta/server/source-link-runtime dist/boot.js",
+    "preseed": "pnpm run build",
+    "seed": "node --import @sapporta/server/source-link-runtime --env-file=../../.env.development dist/seed.js",
+    "predb:generate": "pnpm --filter bookkeeping-shared build",
+    "db:generate": "drizzle-kit generate",
+    "predb:generate:custom": "pnpm --filter bookkeeping-shared build",
+    "db:generate:custom": "drizzle-kit generate --custom",
+    "db:migrate": "drizzle-kit migrate",
+    "db:check": "drizzle-kit check",
+    "predb:studio": "pnpm --filter bookkeeping-shared build",
+    "db:studio": "drizzle-kit studio",
+    "pretypecheck": "pnpm --filter bookkeeping-shared build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@casl/ability": "7.0.1",
+    "@sapporta/honest": "link:/Users/jasim/m/a/code/sapporta/packages/honest",
+    "@sapporta/rest-core": "3.52.2",
+    "@sapporta/server": "link:/Users/jasim/m/a/code/sapporta/packages/core",
+    "@sapporta/shared": "link:/Users/jasim/m/a/code/sapporta/packages/shared",
+    "bookkeeping-shared": "workspace:*",
+    "@better-auth/drizzle-adapter": "1.7.1",
+    "better-auth": "1.7.1",
+    "@hono/node-server": "2.0.8",
+    "hono": "4.12.29",
+    "nodemailer": "9.0.3",
+    "drizzle-orm": "0.45.2",
+    "better-sqlite3": "12.11.1",
+    "@js-temporal/polyfill": "0.5.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsc-watch": "^7.2.0",
+    "drizzle-kit": "0.31.10",
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/nodemailer": "^8.0.1",
+    "vitest": "^3.1.0"
+  }
+}

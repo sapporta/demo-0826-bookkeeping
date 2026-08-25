@@ -1,0 +1,30 @@
+packages:
+  - packages/*
+
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+
+onlyBuiltDependencies:
+  - better-sqlite3
+  - esbuild
+
+overrides:
+  "@sapporta/honest": "link:/Users/jasim/m/a/code/sapporta/packages/honest"
+  "@sapporta/shared": "link:/Users/jasim/m/a/code/sapporta/packages/shared"
+  "@sapporta/ui": "link:/Users/jasim/m/a/code/sapporta/packages/ui"
+  "@sapporta/grid": "link:/Users/jasim/m/a/code/sapporta/packages/grid"
+  "better-sqlite3": "12.11.1"
+  "drizzle-orm": "0.45.2"
+  "@types/better-sqlite3": "7.6.13"
+  "kysely": "0.29.3"
+  "hono": "4.12.29"
+  "@sapporta/rest-core": "3.52.2"
+  "@tanstack/react-form": "1.33.2"
+  "@tanstack/react-query": "5.101.4"
+  "@js-temporal/polyfill": "0.5.1"
+  "zod": "4.4.3"
+  "react": "19.2.7"
+  "react-dom": "19.2.7"
+  "react-router-dom": "7.18.1"
+  "zustand": "5.0.14"
