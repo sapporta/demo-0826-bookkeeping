@@ -1,6 +1,7 @@
 /**
- * The screen at `/`: what the app is for, where to begin, what comes next,
- * and where to look at the result.
+ * The screen at `/`: what to do here, in the order you'd do it, with the
+ * link that starts each step. How double-entry actually works sits at the
+ * bottom, for whoever wants it.
  */
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -8,54 +9,37 @@ import { AppPage } from "@sapporta/frontend/layout";
 import { buttonVariants } from "@sapporta/ui/button";
 import { cn } from "@sapporta/ui/cn";
 
+const sapportaUrl = "https://sapporta.com";
+const repoUrl = "https://github.com/sapporta/demo-0826-bookkeeping";
+
 export function Home() {
   return (
     <AppPage title="Home" bodyClassName="bg-sap-bg text-sap-fg">
       <div className="mx-auto max-w-[44rem] px-5 py-8 sm:px-8 sm:py-10">
-        <header>
-          <h1 className="text-[22px] font-[680] leading-tight text-sap-soft">
-            Household books, kept double-entry
-          </h1>
-          <p className="mt-3 text-[14px] leading-6 text-sap-muted">
-            Every entry moves money between accounts: an expense leaves a bank
-            account and lands in an expense account such as Groceries, income
-            arrives from Salary, a transfer goes from one balance to another.
-            Because each entry balances, balances, cash flow, and spending are
-            all read from the same postings.
-          </p>
-        </header>
+        <DemoNotice />
 
-        <Section
-          heading="Set up the chart of accounts"
-          action={<PrimaryLink to="/tables/accounts">Open accounts</PrimaryLink>}
-          secondary={<QuietLink to="/tables/payees">Open payees</QuietLink>}
-        >
-          Asset, liability, and equity accounts hold balances. Income and
-          expense accounts are the categories entries are filed under, so there
-          is no separate category list. A payee remembers the account it is
-          usually filed under, which fills in the category on the next entry.
-        </Section>
+        <header className="mt-8">
+          <h1 className="text-[22px] font-[680] leading-tight text-sap-soft">
+            Double-entry Bookkeeping
+          </h1>
+        </header>
 
         <Section
           heading="Record what happened"
           action={<PrimaryLink to="/transactions/new">New entry</PrimaryLink>}
           secondary={<QuietLink to="/transactions">Open transactions</QuietLink>}
         >
-          Record an expense, income, or a transfer with the accounts on each
-          side; one purchase can be split across several expense accounts. For
-          anything else, a journal entry takes the accounts and debit or credit
-          amounts directly, as long as they balance. Every entry is saved with
-          its postings and can be reopened from Transactions.
+          Pick expense, income, or transfer, fill in the accounts on each
+          side, and save. One purchase can split across several categories.
         </Section>
 
         <Section
-          heading="Review the month"
+          heading="See how the month is going"
           action={<PrimaryLink to="/reports/spending">Open spending</PrimaryLink>}
           secondary={<QuietLink to="/tables/budgets">Set budgets</QuietLink>}
         >
-          Spending puts each expense account beside its budget for the month.
-          Budgets are one amount per expense account per month; an account
-          without one still shows what was spent.
+          Spending lines every expense account up against its budget. Set a
+          budget for the ones you want to keep an eye on.
         </Section>
 
         <Section
@@ -63,13 +47,80 @@ export function Home() {
           action={<PrimaryLink to="/reports/balances">Open balances</PrimaryLink>}
           secondary={<QuietLink to="/reports/cash-flow">Open cash flow</QuietLink>}
         >
-          Balances shows every account as of a day and the net worth they add
-          up to. Cash flow shows income against expenses over a period. From
-          either, an account opens its register: every posting in order with a
-          running balance, and each posting opens the entry that made it.
+          Balances is what you own and owe today; cash flow is income against
+          expenses. Open any account to see every entry that touched it.
         </Section>
+
+        <Section
+          heading="Make it yours"
+          action={<PrimaryLink to="/tables/accounts">Open accounts</PrimaryLink>}
+          secondary={<QuietLink to="/tables/payees">Open payees</QuietLink>}
+        >
+          Your income and expense accounts double as categories, so there's no
+          separate list to keep. Give a payee a default account and it fills
+          that in for you next time.
+        </Section>
+
+        <HowItWorks />
       </div>
     </AppPage>
+  );
+}
+
+/**
+ * What this deployment is, before anyone mistakes it for their own books.
+ */
+function DemoNotice() {
+  return (
+    <aside className="rounded-[8px] border border-sap-border bg-sap-brand-soft px-4 py-3.5">
+      <p className="text-[14px] leading-6 text-sap-soft">
+        <span className="mr-2 align-[1px] text-sap-label font-bold uppercase tracking-sap-head text-sap-brand">
+          Demo
+        </span>
+        A demo app for the{" "}
+        <a
+          href={sapportaUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="text-sap-link hover:underline"
+        >
+          Sapporta
+        </a>{" "}
+        framework, generated with Fable.{" "}
+        <a
+          href={repoUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="text-sap-link hover:underline"
+        >
+          Source on GitHub
+        </a>
+        .
+      </p>
+      <p className="mt-1 text-[12.5px] leading-5 text-sap-muted">
+        You're signed in as a public demo user, and the data is reset
+        periodically.
+      </p>
+    </aside>
+  );
+}
+
+/**
+ * The double-entry idea, once, for whoever scrolls this far.
+ */
+function HowItWorks() {
+  return (
+    <section className="mt-10 border-t border-sap-border-soft pt-6">
+      <h2 className="text-[13px] font-[680] text-sap-soft">How it works</h2>
+      <p className="mt-2 max-w-[40rem] text-[13px] leading-6 text-sap-muted">
+        Every entry moves money between two accounts — groceries leave your
+        bank account and land in Groceries, salary arrives from Salary, a
+        transfer moves one balance to another. Both sides always match, which
+        is why balances, cash flow, and spending can all be read from the same
+        entries. If you'd rather write the two sides yourself, that's what a
+        journal entry is for.
+      </p>
+    </section>
   );
 }
 
