@@ -43,15 +43,11 @@ COPY packages/frontend/package.json packages/frontend/package.json
 COPY packages/shared/package.json packages/shared/package.json
 RUN pnpm install --frozen-lockfile
 
-# Runtime image: no compiler toolchain, no source TypeScript, only production
-# node_modules, compiled API/shared code, built frontend assets, and project
-# metadata that Sapporta uses to find the project root.
+# Runtime image: production node_modules, compiled output, and the metadata
+# Sapporta reads to find the project root. No toolchain, no sources.
 FROM node:${NODE_VERSION} AS runtime
-ARG PNPM_VERSION
 ENV NODE_ENV=production
 WORKDIR /app
-RUN corepack enable \
-  && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # pnpm stores package contents under the root node_modules/.pnpm directory and
 # links package-local node_modules entries into it, so copy both the root store
@@ -62,6 +58,7 @@ COPY --from=prod-deps --chown=node:node /app/packages/shared/node_modules ./pack
 
 COPY --from=build --chown=node:node /app/packages/api/dist ./packages/api/dist
 COPY --from=build --chown=node:node /app/packages/api/migrations ./packages/api/migrations
+COPY --from=build --chown=node:node /app/packages/api/drizzle.config.ts ./packages/api/drizzle.config.ts
 COPY --from=build --chown=node:node /app/packages/api/package.json ./packages/api/package.json
 COPY --from=build --chown=node:node /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build --chown=node:node /app/packages/shared/package.json ./packages/shared/package.json
@@ -90,4 +87,6 @@ VOLUME ["/app/data"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:' + (process.env.SAPPORTA_API_PORT || process.env.PORT || 3000) + '/health').then(r => process.exit(r.status >= 500 ? 1 : 0)).catch(() => process.exit(1))"
 
-CMD ["sh", "-c", "pnpm --filter ./packages/api db:migrate && node packages/api/dist/boot.js"]
+# `exec` gives PID 1 to Node so the platform's stop signals reach the server
+# instead of this shell.
+CMD ["sh", "-c", "cd /app/packages/api && ./node_modules/.bin/drizzle-kit migrate && cd /app && exec node packages/api/dist/boot.js"]

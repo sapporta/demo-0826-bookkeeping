@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sapporta/frontend": "link:/Users/jasim/m/a/code/sapporta/packages/frontend",
-    "@sapporta/grid": "link:/Users/jasim/m/a/code/sapporta/packages/grid",
+    "@sapporta/frontend": "0.6.0",
+    "@sapporta/grid": "0.5.0",
     "@sapporta/rest-core": "3.52.2",
-    "@sapporta/shared": "link:/Users/jasim/m/a/code/sapporta/packages/shared",
-    "@sapporta/ui": "link:/Users/jasim/m/a/code/sapporta/packages/ui",
+    "@sapporta/shared": "0.3.0",
+    "@sapporta/ui": "0.2.13",
     "@tanstack/react-form": "1.33.2",
     "@tanstack/react-query": "5.101.4",
     "bookkeeping-shared": "workspace:*",

@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@casl/ability": "7.0.1",
-    "@sapporta/honest": "link:/Users/jasim/m/a/code/sapporta/packages/honest",
+    "@sapporta/honest": "0.3.12",
     "@sapporta/rest-core": "3.52.2",
-    "@sapporta/server": "link:/Users/jasim/m/a/code/sapporta/packages/core",
-    "@sapporta/shared": "link:/Users/jasim/m/a/code/sapporta/packages/shared",
+    "@sapporta/server": "0.6.0",
+    "@sapporta/shared": "0.3.0",
     "bookkeeping-shared": "workspace:*",
     "@better-auth/drizzle-adapter": "1.7.1",
     "better-auth": "1.7.1",

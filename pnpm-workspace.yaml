@@ -10,10 +10,10 @@ onlyBuiltDependencies:
   - esbuild
 
 overrides:
-  "@sapporta/honest": "link:/Users/jasim/m/a/code/sapporta/packages/honest"
-  "@sapporta/shared": "link:/Users/jasim/m/a/code/sapporta/packages/shared"
-  "@sapporta/ui": "link:/Users/jasim/m/a/code/sapporta/packages/ui"
-  "@sapporta/grid": "link:/Users/jasim/m/a/code/sapporta/packages/grid"
+  "@sapporta/honest": "0.3.12"
+  "@sapporta/shared": "0.3.0"
+  "@sapporta/ui": "0.2.13"
+  "@sapporta/grid": "0.5.0"
   "better-sqlite3": "12.11.1"
   "drizzle-orm": "0.45.2"
   "@types/better-sqlite3": "7.6.13"
