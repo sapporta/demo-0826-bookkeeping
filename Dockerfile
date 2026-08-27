@@ -34,6 +34,31 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 
+# The books every demo reset returns to. `demo-snapshot.js` publishes whatever
+# is in the database, so this seeds a throwaway one and captures that: the
+# snapshot ships with the image and so always matches the schema the image was
+# built from, which one kept on the data volume would stop doing at the first
+# migration.
+#
+# These settings exist only in this stage. Seeding refuses unless it is granted
+# and NODE_ENV is not production, and the secret is a placeholder that never
+# serves a request: password hashes carry their own salt, and the snapshot's
+# session rows mean nothing to a demo that signs nobody in.
+#
+# A deployment holding real data leaves SAPPORTA_DEMO_SNAPSHOT unset and never
+# reads the file. Delete this stage and its COPY below to leave it out.
+FROM build AS demo-snapshot
+ENV SAPPORTA_ALLOW_SAMPLE_DATA_SEEDING=true \
+    SAPPORTA_DEMO_SNAPSHOT=/app/demo-snapshot.db \
+    BETTER_AUTH_SECRET=build-time-only-this-secret-never-serves-a-request \
+    SAPPORTA_PUBLIC_APP_URL=http://localhost:3000 \
+    SAPPORTA_MAIL_FROM="Sapporta <no-reply@example.invalid>" \
+    SAPPORTA_MAIL_TRANSPORT=disabled
+RUN mkdir -p /app/data \
+  && cd /app/packages/api && ./node_modules/.bin/drizzle-kit migrate && cd /app \
+  && node packages/api/dist/seed.js \
+  && node packages/api/dist/demo-snapshot.js
+
 # Install runtime workspace dependencies in a separate layer. Drizzle Kit is
 # present because the container applies native Drizzle migrations before boot.
 FROM toolchain AS prod-deps
@@ -64,6 +89,11 @@ COPY --from=build --chown=node:node /app/packages/shared/dist ./packages/shared/
 COPY --from=build --chown=node:node /app/packages/shared/package.json ./packages/shared/package.json
 COPY --from=build --chown=node:node /app/packages/frontend/dist ./packages/frontend/dist
 COPY --chown=node:node sapporta.json package.json pnpm-workspace.yaml ./
+
+# Outside /app/data on purpose: the snapshot belongs to this image, and the
+# volume outlives it. Name it with SAPPORTA_DEMO_SNAPSHOT to publish
+# POST /api/demo-reset; leave that unset and the route does not exist.
+COPY --from=demo-snapshot --chown=node:node /app/demo-snapshot.db ./demo-snapshot.db
 
 # Sapporta writes the default SQLite database to /app/data/sqlite.db. Mount
 # /app/data as a persistent volume in production or the database will be lost

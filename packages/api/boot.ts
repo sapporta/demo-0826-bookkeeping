@@ -7,6 +7,7 @@
  */
 import { relative } from "node:path";
 import { serve } from "@hono/node-server";
+import { Temporal } from "@sapporta/shared/temporal";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import {
@@ -21,6 +22,10 @@ import {
   type SapportaEnv,
 } from "@sapporta/server";
 import { loadApp, publicApiRoutes } from "./app.js";
+import {
+  readDemoResetSettings,
+  restoreDemoSnapshotIfEmpty,
+} from "./app/demo-reset.js";
 import { openProjectRuntime } from "./runtime.js";
 
 // The runtime finds the project root itself, so the app starts from any
@@ -32,9 +37,31 @@ const {
   env: projectEnv,
   mailer,
   projectAuth,
+  projectRoot,
   frontendDistDir,
   close: closeDatabase,
 } = await openProjectRuntime({ publicRoutes: publicApiRoutes });
+
+// A demo deployment fills an empty database from the snapshot before it
+// listens. A fresh volume otherwise comes up with its migrations and no rows,
+// which a demo cannot serve a request from - not even the reset that would
+// have fixed it, because it sits behind the same middleware that fails.
+// A restart with data present changes nothing.
+const demoReset = readDemoResetSettings(process.env, projectRoot);
+const demoResetDeps = {
+  catalog: sapporta.catalog,
+  today: () => Temporal.Now.plainDateISO(),
+};
+const restoredSnapshot = restoreDemoSnapshotIfEmpty(
+  conn.sqlite,
+  demoReset,
+  demoResetDeps,
+);
+if (restoredSnapshot) {
+  console.log(
+    `Filled an empty database from the demo snapshot: ${restoredSnapshot.rows} rows.`,
+  );
+}
 
 // All HTTP behavior for this app is mounted on one Hono server.
 const app = new Hono<SapportaEnv>();
@@ -76,7 +103,7 @@ const sapportaApi = mountSapportaFramework(app, sapporta, {
 
 // Mount the application's custom APIs under /api.
 const apiApp = new TsRestApi<SapportaEnv>();
-loadApp(apiApp, { conn, mailer });
+loadApp(apiApp, { conn, mailer, demoReset, demoResetDeps });
 app.route("/api", apiApp);
 
 // Mount the auth-context, workspace, and access-token APIs.

@@ -10,6 +10,8 @@
     "start": "node --import @sapporta/server/source-link-runtime dist/boot.js",
     "preseed": "pnpm run build",
     "seed": "node --import @sapporta/server/source-link-runtime --env-file=../../.env.development dist/seed.js",
+    "predemo:snapshot": "pnpm run build",
+    "demo:snapshot": "node --import @sapporta/server/source-link-runtime --env-file=../../.env.development dist/demo-snapshot.js",
     "predb:generate": "pnpm --filter bookkeeping-shared build",
     "db:generate": "drizzle-kit generate",
     "predb:generate:custom": "pnpm --filter bookkeeping-shared build",

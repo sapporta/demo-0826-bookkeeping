@@ -32,6 +32,12 @@ export function buildAbility(ctx: AppAuthFacts): AppAbility {
     can(["create", "update", "delete"], ["accounts", "payees", "budgets"]);
     can("run", "ledger_entry");
     can("read", "reports");
+
+    // Restoring the demo snapshot puts the books back to what this deployment
+    // shipped and can do nothing else, so it is not held back from the account
+    // whose books they are - on a demo, that is everyone. The route only
+    // exists where a snapshot is configured; see `app/demo-reset.ts`.
+    can("run", "demo_reset");
   }
 
   if (

@@ -101,7 +101,9 @@ Scaffolded projects include a production `Dockerfile` for this same-origin
 shape. It builds the shared package, API, and frontend, installs production
 dependencies, copies the built SPA into `packages/frontend/dist/`, exposes
 port `3000`, and health-checks `/health`. At runtime the image accepts
-either `SAPPORTA_API_PORT` or the conventional `PORT` assigned by a host.
+either `SAPPORTA_API_PORT` or the conventional `PORT` assigned by a host. It
+also carries `/app/demo-snapshot.db`, which is read only by a deployment that
+names it — see **Demo data reset** below.
 
 The health check reports the container healthy on any reply that is not a 5xx,
 so it holds under every `SAPPORTA_HEALTH_POLICY`. It does not require `200`:
@@ -275,6 +277,17 @@ a provider-specific SDK, edit `packages/api/mailer.ts` in the generated project.
 - **Fly.io / Railway / similar:** attach a persistent volume and point the project root at it.
 
 Back up out-of-band (e.g. `sqlite3 db.sqlite .backup /backups/db-$(date +%F).sqlite`, synced to object storage); SQLite gives a consistent snapshot even while Hono is writing.
+
+### Demo data reset
+
+A public demo is a database strangers write to. `SAPPORTA_DEMO_SNAPSHOT` names the books it returns to, and publishes `POST /api/demo-reset`, which restores every table to that snapshot in one transaction on the connection already serving requests. It takes no body, answers with the rows it restored per table, and needs no restart: nothing replaces the database file, so there is no window where the WAL and the file disagree. Left unset, the route does not exist.
+
+- **Publishing the snapshot.** The `Dockerfile`'s `demo-snapshot` stage seeds a throwaway database and captures it to `/app/demo-snapshot.db` in the image — outside the data volume, so the snapshot and the schema it was taken against are always the same version. Point `SAPPORTA_DEMO_SNAPSHOT` at that path to switch the route on. A restore refuses a snapshot whose tables or columns no longer match rather than restoring part of it, so a snapshot left on the volume would turn every reset into a refusal at the first migration.
+- **Publishing one by hand.** `pnpm demo:snapshot` writes whatever is in the database now, so run it against sample data and nothing else — `pnpm seed` into a fresh database, then this. It stages and renames, so it is safe while the server is running.
+- **A fresh volume fills itself.** Before it listens, the server restores the snapshot if the tables the app cannot serve without are empty. Without that a new deployment comes up with its migrations and no rows, and a demo answers every request with `SAPPORTA_DEMO_USER_EMAIL names ... but no account holds that address` — including the reset that would have fixed it, which sits behind the same middleware. A restart with data present changes nothing. A snapshot that cannot be read or would leave those tables empty fails the boot, loudly, instead of once per request.
+- **Calling it.** Any scheduler: `curl -fsS -X POST https://demo.example.com/api/demo-reset`. On a demo, `SAPPORTA_DEMO_USER_EMAIL` already serves uncredentialed requests as the demo account, so nothing else is needed. Without that setting the route still exists but requires a credential, such as a personal access token.
+- **Ids.** The restore rebases SQLite's `AUTOINCREMENT` counters along with the rows, so ids do not climb across resets and a link to a row keeps working after one.
+- **Dates.** A restore brings the snapshot's dates up to today, so a snapshot taken months ago still restores as books whose newest entry is today's and whose current month has something in it. Columns the schema declares as dates move by whole days; `budgets.month` moves by whole months, because a column keyed by month has to keep landing on months. The two agree except at the oldest edge, where the oldest month can end up holding entries whose budget row sits a month later — it costs the oldest month of a demo, and it buys never showing a ledger dated three weeks from now. The response reports what it did (`"shift":{"anchor":"2026-02-25","days":183,"months":6}`), so a snapshot that has stopped moving is visible in the scheduler's log.
 
 ### Graceful shutdown
 

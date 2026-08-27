@@ -79,6 +79,12 @@ Prefer the project-local CLI form, `pnpm exec sapporta ...`. It reads
   other command-line script uses `openScriptRuntime()` in
   `packages/api/script-runtime.ts`.
   https://sapporta.com/docs/guides/operations/sample-data-and-scripts.md
+- **Demo data reset** — `pnpm demo:snapshot` publishes the snapshot,
+  `POST /api/demo-reset` restores it and brings its dates up to today.
+  `packages/api/modules/demo-reset/` is generic; everything app-specific is in
+  `packages/api/app/demo-reset.ts`, whose header is the checklist to follow
+  when porting this to another demo app — read it before changing a schema
+  that has date or period columns. `DEPLOYMENT.md` owns the operational side.
 - **Email** — `packages/api/mailer.ts`, handed to `loadApp()` from
   `packages/api/app.ts`.
   https://sapporta.com/docs/guides/operations/email-and-runtime-services.md
