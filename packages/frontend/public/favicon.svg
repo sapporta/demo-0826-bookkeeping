@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Bookkeeping">
+  <!-- A T-account: the rule, the stem, and one entry on each side, the same
+       length because in double-entry they always are. The colors are the
+       app's own brand tokens, sap-brand over sap-bg. The dark variant is for
+       a dark browser tab strip, which follows the OS rather than the app.
+
+       This file is the source. favicon.ico and apple-touch-icon.png are
+       rendered from it by scripts/build-favicons.mjs, via `pnpm favicons`. -->
+  <style>
+    .tile { fill: #8b5d3c }
+    .mark { fill: #f7f3ee }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #dca86b }
+      .mark { fill: #14150f }
+    }
+  </style>
+  <rect class="tile" width="32" height="32" rx="6" />
+  <g class="mark">
+    <rect x="6" y="8" width="20" height="2.6" rx="1.3" />
+    <rect x="14.7" y="8" width="2.6" height="17" rx="1.3" />
+    <rect x="7.8" y="17" width="5.4" height="2.6" rx="1.3" />
+    <rect x="18.8" y="17" width="5.4" height="2.6" rx="1.3" />
+  </g>
+</svg>

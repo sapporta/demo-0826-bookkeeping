@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- The .ico is the fallback for browsers without SVG icon support; every
+         current one takes favicon.svg, which carries a dark-tab-strip variant.
+         All three are rendered from that SVG by `pnpm favicons`. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>bookkeeping</title>
   </head>
   <body>
