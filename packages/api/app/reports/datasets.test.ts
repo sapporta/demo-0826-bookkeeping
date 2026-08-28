@@ -1,13 +1,30 @@
-import { gridDatasetSchema } from "@sapporta/shared/grid-dataset";
+import {
+  gridDatasetLinkProblems,
+  gridDatasetSchema,
+  type GridDataset,
+} from "@sapporta/shared/grid-dataset";
 import { describe, expect, it } from "vitest";
 import { accountMonthsDataset } from "./account-months.js";
 import { balancesDataset } from "./balances.js";
+import { profitLossDataset } from "./profit-loss.js";
 import { registerDataset } from "./register.js";
 import { spendingDataset } from "./spending.js";
 
+/**
+ * A dataset as the grid receives it: the shape parsed, and every declarative
+ * link checked against the columns its level actually has. A bind naming a
+ * column that is not there withholds the link on every row, which looks the
+ * same as a legitimately empty cell.
+ */
+function asGrid(value: GridDataset): GridDataset {
+  const parsed = gridDatasetSchema.parse(value);
+  expect(gridDatasetLinkProblems(parsed)).toEqual([]);
+  return parsed;
+}
+
 describe("balancesDataset", () => {
   it("shows balances in their normal sign and nets assets against liabilities", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       balancesDataset({
         asOf: "2026-08-25",
         rows: [
@@ -34,7 +51,7 @@ describe("balancesDataset", () => {
 
 describe("registerDataset", () => {
   it("runs the balance from the opening row through each posting", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       registerDataset({
         account: { id: 2, name: "Credit card", type: "liability" },
         opening: -100,
@@ -56,7 +73,7 @@ describe("registerDataset", () => {
 
 describe("spendingDataset", () => {
   it("compares budget with actual and reports the ratio used", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       spendingDataset({
         month: "2026-08",
         rows: [
@@ -84,7 +101,7 @@ describe("accountMonthsDataset", () => {
   const travel = { id: 9, name: "Travel", type: "expense" } as const;
 
   it("shows every month the window covers and each month's share of it", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       accountMonthsDataset({
         account: travel,
         from: "2026-01-01",
@@ -115,7 +132,7 @@ describe("accountMonthsDataset", () => {
   });
 
   it("hands a partly covered month only the days the window counted", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       accountMonthsDataset({
         account: travel,
         from: "2026-01-20",
@@ -134,7 +151,7 @@ describe("accountMonthsDataset", () => {
   });
 
   it("reads a liability's month in the sign a person expects", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       accountMonthsDataset({
         account: { id: 4, name: "Credit card", type: "liability" },
         from: "2026-01-01",
@@ -152,7 +169,7 @@ describe("accountMonthsDataset", () => {
 
 describe("accountMonthsDataset share", () => {
   it("measures a two-directional account against its gross movement", () => {
-    const dataset = gridDatasetSchema.parse(
+    const dataset = asGrid(
       accountMonthsDataset({
         account: { id: 4, name: "Credit card", type: "liability" },
         from: "2026-01-01",
@@ -166,4 +183,47 @@ describe("accountMonthsDataset share", () => {
     // Normal sign flips both: the month that grew the debt reads +900.
     expect(dataset.nodes.map((n) => n.columns.share)).toEqual([900 / 1700, -800 / 1700]);
   });
+});
+
+describe("profitLossDataset", () => {
+  const rows = [
+    { id: 7, name: "Salary", type: "income" as const, balance: -5000 },
+    { id: 9, name: "Travel", type: "expense" as const, balance: 2330.95 },
+  ];
+
+  it("groups income and expenses, nets them, and hands each account the period", () => {
+    const parsed = asGrid(
+      profitLossDataset({ rows, from: "2025-08-28", to: "2026-08-28" }),
+    );
+    expect(parsed.nodes.map((n) => n.rowKey)).toEqual(["type:income", "type:expense"]);
+    expect(parsed.nodes[1]?.children?.account?.[0]?.columns).toMatchObject({
+      account_id: 9,
+      amount: 2330.95,
+      period_from: "2025-08-28",
+      period_to: "2026-08-28",
+    });
+    expect(parsed.footerRows?.[0]?.columns.amount).toBe(2669.05);
+  });
+
+  it("carries the window into the drill-down when it has edges", () => {
+    const parsed = asGrid(
+      profitLossDataset({ rows, from: "2025-08-28", to: "2026-08-28" }),
+    );
+    expect(accountLink(parsed)?.bind).toEqual({
+      account_id: "account_id",
+      period_from: "period_from",
+      period_to: "period_to",
+    });
+  });
+
+  it("binds no edge the window does not have", () => {
+    const parsed = asGrid(profitLossDataset({ rows, from: null, to: null }));
+    // Binding a null column would withhold the drill-down on every row.
+    expect(accountLink(parsed)?.bind).toEqual({ account_id: "account_id" });
+  });
+
+  function accountLink(parsed: GridDataset) {
+    const column = parsed.levels.account?.columns.find((c) => c.id === "account");
+    return column?.links?.[0];
+  }
 });
