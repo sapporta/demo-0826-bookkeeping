@@ -1,9 +1,10 @@
 /**
- * Where a drilled-into report was reached from.
+ * The report one level up from a drilled-into one.
  *
- * A drill-down is only legible if each stop says what it descended from, and
- * the way back up is the same address the step down was built from. Quiet by
- * design: the screen's own work is the report, not the trail.
+ * A drill-down is only legible if each stop names the level above it, and the
+ * address is the one the step down was built from, so going back up lands on
+ * the same numbers rather than a near neighbour. Quiet by design: the screen's
+ * own work is the report, not the trail.
  */
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
