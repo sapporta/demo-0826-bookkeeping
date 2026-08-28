@@ -109,11 +109,9 @@ describe("accountMonthsDataset", () => {
       period_to: "2026-01-31",
     });
     expect(dataset.nodes[1]?.columns).toMatchObject({ entries: 0, amount: 0, share: 0 });
-    expect(dataset.footerRows?.[0]?.columns).toMatchObject({
-      entries: 3,
-      amount: 500,
-      share: 1,
-    });
+    expect(dataset.footerRows?.[0]?.columns).toMatchObject({ entries: 3, amount: 500 });
+    // A total row's share of itself says nothing, so it is left off.
+    expect(dataset.footerRows?.[0]?.columns.share).toBeUndefined();
   });
 
   it("hands a partly covered month only the days the window counted", () => {
@@ -167,6 +165,5 @@ describe("accountMonthsDataset share", () => {
     );
     // Normal sign flips both: the month that grew the debt reads +900.
     expect(dataset.nodes.map((n) => n.columns.share)).toEqual([900 / 1700, -800 / 1700]);
-    expect(dataset.footerRows?.[0]?.columns.share).toBe(100 / 1700);
   });
 });

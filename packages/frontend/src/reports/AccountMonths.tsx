@@ -68,6 +68,7 @@ function largestMonth(dataset: GridDataset) {
     const amount = node.columns.amount;
     const month = node.columns.month;
     if (typeof amount !== "number" || typeof month !== "string") continue;
+    if (amount === 0) continue;
     if (largest === null || amount > largest.amount) largest = { month, amount };
   }
   return largest;

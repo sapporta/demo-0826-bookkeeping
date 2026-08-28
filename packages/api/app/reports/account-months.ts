@@ -3,9 +3,9 @@
  *
  * A Profit & Loss line answers "how much for the year"; this answers "which
  * months was it", and each month opens the register for exactly the days it
- * counted. Months the window covers but the account saw nothing in are shown
- * empty, so a reader can see the shape of the year rather than a list with
- * holes in it.
+ * counted. A window with both edges named also shows the months the account
+ * saw nothing in, so a reader sees the shape of the year rather than a list
+ * with holes in it; an open window can only show the months that have rows.
  */
 import type { TsRestApi, SapportaEnv } from "@sapporta/server";
 import { workspaceTimeZone } from "@sapporta/server";
@@ -143,7 +143,7 @@ export function accountMonthsDataset({
             kind: "number",
             displayFormat: "percentage",
             zeroDisplay: "blank",
-            notes: "This month's share of the period's total.",
+            notes: "This month's share of the period's movement.",
           },
         ],
       },
@@ -172,7 +172,6 @@ export function accountMonthsDataset({
           debits,
           credits,
           amount: total,
-          share: share(total),
         },
       },
     ],

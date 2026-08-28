@@ -36,8 +36,9 @@ import { useReportDataset, type ReportDatasetLoadContext } from "./use-report-da
 
 type ProfitLossParams = { period: DateRangeState };
 
-// A statement covers a year. The rolling one always holds a full set of
-// months, whichever month a reader opens it in.
+// A statement covers a year. The rolling one holds twelve months' worth
+// whichever month a reader opens it in, where a calendar year to date would
+// be one month long every January.
 const defaultPeriod = relative("1y");
 
 function readProfitLossParams(raw: Record<string, string>): UrlRead<ProfitLossParams> {

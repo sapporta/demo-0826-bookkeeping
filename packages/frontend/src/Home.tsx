@@ -121,8 +121,8 @@ function HowItWorks() {
         bank account and land in Groceries, salary arrives from Salary, a
         transfer moves one balance to another. Both sides always match, which
         is why balances, profit &amp; loss, and spending can all be read from
-        the same entries. If you'd rather write the two sides yourself, that's what a
-        journal entry is for.
+        the same entries. If you'd rather write the two sides yourself, that's
+        what a journal entry is for.
       </p>
     </section>
   );
