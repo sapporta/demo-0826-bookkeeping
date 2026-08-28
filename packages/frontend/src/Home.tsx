@@ -86,7 +86,8 @@ function DemoNotice() {
         >
           Sapporta
         </a>{" "}
-        framework, generated with Fable.{" "}
+        framework, generated with Fable using the sample prompt from the
+        Sapporta homepage.{" "}
         <a
           href={repoUrl}
           target="_blank"
