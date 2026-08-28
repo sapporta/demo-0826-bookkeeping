@@ -12,7 +12,7 @@ import { useSchemaStore } from "@sapporta/frontend/schema";
 const reports = [
   { label: "Transactions (journal)", to: "/transactions" },
   { label: "Balances", to: "/reports/balances" },
-  { label: "Cash flow", to: "/reports/cash-flow" },
+  { label: "Profit & Loss", to: "/reports/profit-loss" },
   { label: "Spending against budget", to: "/reports/spending" },
   { label: "Account register", to: "/reports/register" },
 ];

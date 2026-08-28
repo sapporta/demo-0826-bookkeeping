@@ -1,5 +1,5 @@
 /**
- * Cash flow: income and expenses by account over a period, and the net.
+ * Profit & Loss: income and expenses by account over a period, and the net.
  */
 import { relative, type DateRangeState } from "@sapporta/shared/daterange";
 import {
@@ -29,25 +29,30 @@ import {
 } from "./report-screen";
 import { useReportDataset, type ReportDatasetLoadContext } from "./use-report-dataset";
 
-type CashFlowParams = { period: DateRangeState };
+type ProfitLossParams = { period: DateRangeState };
 
-const defaultPeriod = relative("mtd");
+// A statement covers a year. The rolling one always holds a full set of
+// months, whichever month a reader opens it in.
+const defaultPeriod = relative("1y");
 
-function readCashFlowParams(raw: Record<string, string>): UrlRead<CashFlowParams> {
-  const errors: UrlRead<CashFlowParams>["errors"] = [];
+function readProfitLossParams(raw: Record<string, string>): UrlRead<ProfitLossParams> {
+  const errors: UrlRead<ProfitLossParams>["errors"] = [];
   const period = readPeriod(raw, defaultPeriod, errors, "period");
   return { params: { period }, errors };
 }
 
-async function loadCashFlow(input: CashFlowParams, context: ReportDatasetLoadContext) {
-  return reportsApi.cashFlow({
+async function loadProfitLoss(
+  input: ProfitLossParams,
+  context: ReportDatasetLoadContext,
+) {
+  return reportsApi.profitLoss({
     query: serializeDateRange(input.period, "period"),
     fetchOptions: { signal: context.signal },
   });
 }
 
 /** Account rows open the register for the same period. */
-const cashFlowLinks: ReportCellLinkResolvers<CashFlowParams> = {
+const profitLossLinks: ReportCellLinkResolvers<ProfitLossParams> = {
   account: {
     cell: {
       account: ({ node, input }) => {
@@ -61,7 +66,7 @@ const cashFlowLinks: ReportCellLinkResolvers<CashFlowParams> = {
   },
 };
 
-function cashFlowStats(dataset: GridDataset): ReportStat[] {
+function profitLossStats(dataset: GridDataset): ReportStat[] {
   const income = datasetNumber(dataset, "type:income", "amount") ?? 0;
   const expenses = datasetNumber(dataset, "type:expense", "amount") ?? 0;
   const net = datasetNumber(dataset, "net", "amount") ?? 0;
@@ -72,14 +77,17 @@ function cashFlowStats(dataset: GridDataset): ReportStat[] {
   ];
 }
 
-export function CashFlow() {
-  const { urlState, draft, setDraft, apply } = useReportUrlDraft(readCashFlowParams);
+export function ProfitLoss() {
+  const { urlState, draft, setDraft, apply } = useReportUrlDraft(readProfitLossParams);
   const input = urlState.errors.length === 0 ? urlState.params : null;
-  const report = useReportDataset({ input, load: loadCashFlow });
-  const draftIssue = periodIssue<CashFlowParams>(draft.period, "period");
+  const report = useReportDataset({ input, load: loadProfitLoss });
+  const draftIssue = periodIssue<ProfitLossParams>(draft.period, "period");
 
   return (
-    <ReportScreenFrame title="Cash flow" subtitle="Where money came from and where it went.">
+    <ReportScreenFrame
+      title="Profit & Loss"
+      subtitle="What came in and what went out over a period."
+    >
       <ReportToolbar
         actions={
           <ReportRunButton
@@ -103,7 +111,7 @@ export function CashFlow() {
 
       {report.dataset ? (
         <>
-          <ReportSummaryStats stats={cashFlowStats(report.dataset)} />
+          <ReportSummaryStats stats={profitLossStats(report.dataset)} />
           <div className="min-h-0 flex-1 overflow-auto">
             {report.dataset.nodes.length === 0 ? (
               <p className="p-[18px] text-sap-data text-sap-muted">
@@ -112,14 +120,14 @@ export function CashFlow() {
             ) : (
               <ReportGridDataset
                 dataset={report.dataset}
-                links={cashFlowLinks}
+                links={profitLossLinks}
                 linkContext={input ? { input } : undefined}
               />
             )}
           </div>
         </>
       ) : (
-        <p className="p-[18px] text-sap-data text-sap-muted">Loading cash flow…</p>
+        <p className="p-[18px] text-sap-data text-sap-muted">Loading profit &amp; loss…</p>
       )}
     </ReportScreenFrame>
   );

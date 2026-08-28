@@ -13,7 +13,7 @@ export const ledgerApi = createApiClient(ledgerContract, {
   baseUrl: getApiBase,
 });
 
-/** Balances, cash flow, spending, the account register, and the journal. */
+/** Profit & Loss, balances, spending, the drill-downs, and the journal. */
 export const reportsApi = createApiClient(reportsContract, {
   baseUrl: getApiBase,
 });

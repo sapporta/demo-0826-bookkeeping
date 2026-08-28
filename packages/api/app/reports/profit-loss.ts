@@ -1,12 +1,13 @@
 /**
- * Cash flow: where money came from and where it went over a period — every
- * income and expense account's activity, and the net at the foot.
+ * Profit & Loss: what the household earned and what it spent over a period,
+ * every income and expense account under its heading, and the net at the foot.
  */
 import type { TsRestApi, SapportaEnv } from "@sapporta/server";
 import { workspaceTimeZone } from "@sapporta/server";
 import type { GridDataset, GridDatasetNode } from "@sapporta/shared/grid-dataset";
 import {
   ACCOUNT_TYPE_LABELS,
+  CATEGORY_ACCOUNT_TYPES,
   reportsContract,
   roundMoney,
   type AccountType,
@@ -26,8 +27,8 @@ import {
   type ReportClock,
 } from "./shared.js";
 
-export function registerCashFlow(api: TsRestApi<SapportaEnv>, clock: ReportClock) {
-  api.register("cashFlow", reportsContract.cashFlow, ({ c, request }) => {
+export function registerProfitLoss(api: TsRestApi<SapportaEnv>, clock: ReportClock) {
+  api.register("profitLoss", reportsContract.profitLoss, ({ c, request }) => {
     const auth = requireAuthorizedWorkspaceData(c, READ_REPORTS);
     const read = readPeriod(request.query, workspaceTimeZone(auth), clock.now());
     if (!read.ok) return read.response;
@@ -35,24 +36,22 @@ export function registerCashFlow(api: TsRestApi<SapportaEnv>, clock: ReportClock
     const rows = accountBalances(c.get("db"), auth, window);
     return {
       status: 200,
-      body: cashFlowDataset({ rows, from: window.from, to: window.to }),
+      body: profitLossDataset({ rows, from: window.from, to: window.to }),
     };
   });
 }
 
-export type CashFlowInput = {
+export type ProfitLossInput = {
   rows: readonly AccountBalanceRow[];
   from: string | null;
   to: string | null;
 };
 
-const CASH_FLOW_TYPES: readonly AccountType[] = ["income", "expense"];
-
-export function cashFlowDataset({ rows, from, to }: CashFlowInput): GridDataset {
+export function profitLossDataset({ rows, from, to }: ProfitLossInput): GridDataset {
   const totals = new Map<AccountType, number>();
   const nodes: GridDatasetNode[] = [];
 
-  for (const type of CASH_FLOW_TYPES) {
+  for (const type of CATEGORY_ACCOUNT_TYPES) {
     const accounts = rows.filter((row) => row.type === type);
     if (accounts.length === 0) continue;
     const children = accounts.map((row) => ({
@@ -84,18 +83,25 @@ export function cashFlowDataset({ rows, from, to }: CashFlowInput): GridDataset 
   ];
 
   return {
-    name: "cash-flow",
-    label: `Cash flow, ${windowLabel({ from, to })}`,
+    name: "profit-loss",
+    label: `Profit & Loss, ${windowLabel({ from, to })}`,
     rootLevel: "type",
     levels: {
-      type: { label: "Flows", columns, childLevels: ["account"] },
+      // Two lines and a net is the whole statement; the accounts behind each
+      // are one expand away for a reader who wants to know which.
+      type: {
+        label: "Income and expenses",
+        columns,
+        childLevels: ["account"],
+        defaultCollapsed: true,
+      },
       account: { label: "Accounts", columns, childLevels: [] },
     },
     nodes,
     footerRows: [
       {
         rowKey: "net",
-        columns: { account: "Net cash flow (income − expenses)", amount: net },
+        columns: { account: "Net (income − expenses)", amount: net },
       },
     ],
   };

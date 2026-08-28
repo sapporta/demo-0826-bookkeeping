@@ -45,10 +45,13 @@ export function Home() {
         <Section
           heading="Check where you stand"
           action={<PrimaryLink to="/reports/balances">Open balances</PrimaryLink>}
-          secondary={<QuietLink to="/reports/cash-flow">Open cash flow</QuietLink>}
+          secondary={
+            <QuietLink to="/reports/profit-loss">Open profit &amp; loss</QuietLink>
+          }
         >
-          Balances is what you own and owe today; cash flow is income against
-          expenses. Open any account to see every entry that touched it.
+          Balances is what you own and owe today; profit &amp; loss is income
+          against expenses over a period. Open any account to see every entry
+          that touched it.
         </Section>
 
         <Section
@@ -117,8 +120,8 @@ function HowItWorks() {
         Every entry moves money between two accounts — groceries leave your
         bank account and land in Groceries, salary arrives from Salary, a
         transfer moves one balance to another. Both sides always match, which
-        is why balances, cash flow, and spending can all be read from the same
-        entries. If you'd rather write the two sides yourself, that's what a
+        is why balances, profit &amp; loss, and spending can all be read from
+        the same entries. If you'd rather write the two sides yourself, that's what a
         journal entry is for.
       </p>
     </section>

@@ -35,8 +35,8 @@ const Journal = lazy(() =>
 const Balances = lazy(() =>
   import("./reports/Balances").then((m) => ({ default: m.Balances })),
 );
-const CashFlow = lazy(() =>
-  import("./reports/CashFlow").then((m) => ({ default: m.CashFlow })),
+const ProfitLoss = lazy(() =>
+  import("./reports/ProfitLoss").then((m) => ({ default: m.ProfitLoss })),
 );
 const Spending = lazy(() =>
   import("./reports/Spending").then((m) => ({ default: m.Spending })),
@@ -75,7 +75,7 @@ export const appNavigation: Navigation = [
     label: "Review",
     items: [
       { label: "Spending", icon: ChartNoAxesColumn, to: "/reports/spending" },
-      { label: "Cash flow", icon: Wallet, to: "/reports/cash-flow" },
+      { label: "Profit & Loss", icon: Wallet, to: "/reports/profit-loss" },
       { label: "Balances", icon: Scale, to: "/reports/balances" },
       { label: "Account register", icon: BookOpen, to: "/reports/register" },
     ],
@@ -115,7 +115,7 @@ export const appProtectedRoutes = (
       element={screen(<EntryForm mode="edit" />)}
     />
     <Route path="reports/balances" element={screen(<Balances />)} />
-    <Route path="reports/cash-flow" element={screen(<CashFlow />)} />
+    <Route path="reports/profit-loss" element={screen(<ProfitLoss />)} />
     <Route path="reports/spending" element={screen(<Spending />)} />
     <Route path="reports/register" element={screen(<Register />)} />
     <Route path="advanced" element={screen(<Advanced />)} />

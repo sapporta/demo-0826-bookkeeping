@@ -22,8 +22,8 @@ export const balancesQuerySchema = z.object({
 });
 export type BalancesQuery = z.output<typeof balancesQuerySchema>;
 
-export const cashFlowQuerySchema = z.object(periodQuery);
-export type CashFlowQuery = z.output<typeof cashFlowQuerySchema>;
+export const profitLossQuerySchema = z.object(periodQuery);
+export type ProfitLossQuery = z.output<typeof profitLossQuerySchema>;
 
 export const spendingQuerySchema = z.object({
   month: monthSchema.optional(),
@@ -53,12 +53,12 @@ export const reportsContract = c.router({
     query: balancesQuerySchema,
     responses: reportResponses,
   }),
-  cashFlow: c.query({
+  profitLoss: c.query({
     method: "GET",
-    path: "/reports/cash-flow",
+    path: "/reports/profit-loss",
     summary: "Income and expenses over a period",
     metadata: { tags: ["reports"] },
-    query: cashFlowQuerySchema,
+    query: profitLossQuerySchema,
     responses: reportResponses,
   }),
   spending: c.query({
