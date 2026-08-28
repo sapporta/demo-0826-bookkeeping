@@ -4,8 +4,8 @@
  *   pnpm seed
  *
  * Fills a fresh database with a household's books: a chart of accounts, the
- * payees they deal with, about eight months of entries ending today, and a
- * budget for each expense account in each of those months. Entries go
+ * payees they deal with, twelve months of entries ending today, and a budget
+ * for each expense account in each of those months. Entries go
  * through the same workflow the entry form uses, so every transaction here
  * balances the way a recorded one does.
  *
@@ -30,6 +30,16 @@ const SAMPLE_DATA_ACCOUNT = {
   email: "test@example.com",
   password: "test1234",
 };
+
+/** Months of history the books cover, the last of them the current one. */
+const MONTHS = 12;
+
+/**
+ * The month the week away falls in, counted from the first. Four months back
+ * keeps it clear of the part-finished current month and inside any window a
+ * report is likely to open on.
+ */
+const WEEK_AWAY_MONTH = MONTHS - 5;
 
 const demo = await openSeedRuntime(SAMPLE_DATA_ACCOUNT);
 
@@ -73,6 +83,7 @@ async function seed() {
   const diningOut = await account("Dining out", "expense");
   const utilities = await account("Utilities", "expense");
   const transport = await account("Transport", "expense");
+  const travel = await account("Travel", "expense");
   const fuel = await account("Fuel", "expense");
   const insurance = await account("Insurance", "expense");
   const health = await account("Health", "expense");
@@ -113,10 +124,13 @@ async function seed() {
   const zara = await payee("Zara", clothing);
   const autoFinance = await payee("Auto Finance Co", loanInterest);
   const florist = await payee("Bloom & Co Florist", gifts);
+  const airline = await payee("United Airlines", travel);
+  const hotel = await payee("Marriott", travel);
+  const carHire = await payee("Hertz", travel);
 
   // Entries, month by month, ending today on this machine's calendar.
   const today = Temporal.Now.plainDateISO(deviceTimeZone());
-  const firstMonth = today.toPlainYearMonth().subtract({ months: 7 });
+  const firstMonth = today.toPlainYearMonth().subtract({ months: MONTHS - 1 });
 
   const drafts: EntryBody[] = [];
   const record = (entry: EntryBody) => {
@@ -187,7 +201,7 @@ async function seed() {
   });
 
   let cardBalance = 850;
-  for (let offset = 0; offset < 8; offset += 1) {
+  for (let offset = 0; offset < MONTHS; offset += 1) {
     const month = firstMonth.add({ months: offset });
     const day = (d: number) => month.toPlainDate({ day: Math.min(d, month.daysInMonth) });
     let cardSpend = 0;
@@ -301,6 +315,20 @@ async function seed() {
       expense(day(12), florist, creditCard, [{ account_id: gifts, amount: onCard(between(45, 85)) }], "Birthday flowers");
     }
 
+    // Travel arrives in trips rather than by the month: two long weekends,
+    // and one week away that carries most of the year on its own.
+    if (offset === WEEK_AWAY_MONTH) {
+      expense(day(12), airline, creditCard, [{ account_id: travel, amount: onCard(624.4) }], "Flights to Denver");
+      expense(day(14), hotel, creditCard, [{ account_id: travel, amount: onCard(538.75) }], "Six nights in Denver");
+      expense(day(19), carHire, creditCard, [{ account_id: travel, amount: onCard(286.2) }], "Car hire in Denver");
+    } else if (offset === 2) {
+      expense(day(9), airline, creditCard, [{ account_id: travel, amount: onCard(186.3) }], "Flights to Portland");
+      expense(day(10), hotel, creditCard, [{ account_id: travel, amount: onCard(212.5) }], "Two nights in Portland");
+    } else if (offset === 10) {
+      expense(day(16), airline, creditCard, [{ account_id: travel, amount: onCard(214.8) }], "Flights to San Diego");
+      expense(day(17), hotel, creditCard, [{ account_id: travel, amount: onCard(268) }], "Three nights in San Diego");
+    }
+
     // Freelance work some months, paid to checking.
     if (offset % 3 === 2) {
       income(day(22), upwork, checking, [{ account_id: freelance, amount: pick([750, 900, 1200]) }], "Contract invoice");
@@ -323,6 +351,7 @@ async function seed() {
     [diningOut]: 180,
     [utilities]: 260,
     [transport]: 80,
+    [travel]: 150,
     [fuel]: 160,
     [insurance]: 330,
     [health]: 60,
@@ -334,7 +363,7 @@ async function seed() {
     [loanInterest]: 50,
   };
   let budgetRows = 0;
-  for (let offset = 0; offset < 8; offset += 1) {
+  for (let offset = 0; offset < MONTHS; offset += 1) {
     const month = firstMonth.add({ months: offset }).toString();
     for (const [accountId, amount] of Object.entries(monthlyBudget)) {
       await demo.rows(budgets).create({ account_id: Number(accountId), month, amount });
@@ -344,7 +373,7 @@ async function seed() {
 
   console.log(`Seeded ${demo.workspace.name}.`);
   console.log(
-    `Wrote 23 accounts, 26 payees, ${drafts.length} transactions, and ${budgetRows} budgets.`,
+    `Wrote 24 accounts, 29 payees, ${drafts.length} transactions, and ${budgetRows} budgets.`,
   );
   console.log(
     `Sign in as ${SAMPLE_DATA_ACCOUNT.email}, with the password written in packages/api/seed.ts.`,
