@@ -41,6 +41,9 @@ const ProfitLoss = lazy(() =>
 const Spending = lazy(() =>
   import("./reports/Spending").then((m) => ({ default: m.Spending })),
 );
+const AccountMonths = lazy(() =>
+  import("./reports/AccountMonths").then((m) => ({ default: m.AccountMonths })),
+);
 const Register = lazy(() =>
   import("./reports/Register").then((m) => ({ default: m.Register })),
 );
@@ -117,6 +120,7 @@ export const appProtectedRoutes = (
     <Route path="reports/balances" element={screen(<Balances />)} />
     <Route path="reports/profit-loss" element={screen(<ProfitLoss />)} />
     <Route path="reports/spending" element={screen(<Spending />)} />
+    <Route path="reports/account-months" element={screen(<AccountMonths />)} />
     <Route path="reports/register" element={screen(<Register />)} />
     <Route path="advanced" element={screen(<Advanced />)} />
   </>

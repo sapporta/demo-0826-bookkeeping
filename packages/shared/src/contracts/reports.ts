@@ -17,6 +17,16 @@ const periodQuery = {
   period_to: z.string().optional(),
 };
 
+/**
+ * What a report about one account over a period reads. The register and the
+ * monthly summary are the same ledger at two grains, so they take the same
+ * parameters and a drill-down between them binds one to the other.
+ */
+const accountPeriodQuery = {
+  account_id: z.coerce.number().int().positive(),
+  ...periodQuery,
+};
+
 export const balancesQuerySchema = z.object({
   as_of: isoDateSchema.optional(),
 });
@@ -30,10 +40,10 @@ export const spendingQuerySchema = z.object({
 });
 export type SpendingQuery = z.output<typeof spendingQuerySchema>;
 
-export const registerQuerySchema = z.object({
-  account_id: z.coerce.number().int().positive(),
-  ...periodQuery,
-});
+export const accountMonthsQuerySchema = z.object(accountPeriodQuery);
+export type AccountMonthsQuery = z.output<typeof accountMonthsQuerySchema>;
+
+export const registerQuerySchema = z.object(accountPeriodQuery);
 export type RegisterQuery = z.output<typeof registerQuerySchema>;
 
 export const journalQuerySchema = z.object(periodQuery);
@@ -43,6 +53,9 @@ const reportResponses = {
   200: gridDatasetSchema,
   400: errorBodySchema,
 };
+
+/** A report naming one account can be asked for an account it cannot see. */
+const accountReportResponses = { ...reportResponses, 404: errorBodySchema };
 
 export const reportsContract = c.router({
   balances: c.query({
@@ -69,13 +82,21 @@ export const reportsContract = c.router({
     query: spendingQuerySchema,
     responses: reportResponses,
   }),
+  accountMonths: c.query({
+    method: "GET",
+    path: "/reports/account-months",
+    summary: "One account's totals month by month",
+    metadata: { tags: ["reports"] },
+    query: accountMonthsQuerySchema,
+    responses: accountReportResponses,
+  }),
   register: c.query({
     method: "GET",
     path: "/reports/register",
     summary: "One account's postings with a running balance",
     metadata: { tags: ["reports"] },
     query: registerQuerySchema,
-    responses: { ...reportResponses, 404: errorBodySchema },
+    responses: accountReportResponses,
   }),
   journal: c.query({
     method: "GET",

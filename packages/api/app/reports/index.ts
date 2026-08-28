@@ -3,6 +3,7 @@
  * contracts into the OpenAPI document.
  */
 import { TsRestApi, type SapportaEnv } from "@sapporta/server";
+import { registerAccountMonths } from "./account-months.js";
 import { registerBalances } from "./balances.js";
 import { registerJournal } from "./journal.js";
 import { registerProfitLoss } from "./profit-loss.js";
@@ -15,6 +16,7 @@ export function createReportsApi(clock: ReportClock): TsRestApi<SapportaEnv> {
   registerBalances(api, clock);
   registerProfitLoss(api, clock);
   registerSpending(api, clock);
+  registerAccountMonths(api, clock);
   registerRegister(api, clock);
   registerJournal(api, clock);
   return api;

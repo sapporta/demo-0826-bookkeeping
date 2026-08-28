@@ -207,6 +207,55 @@ export function balanceBefore(
   return row?.total ?? 0;
 }
 
+export type AccountMonthRow = {
+  /** Calendar month as `YYYY-MM`. */
+  month: string;
+  /** Transactions that touched the account in the month. */
+  entries: number;
+  debits: number;
+  credits: number;
+  /** Signed sum of the month's postings: debits less credits. */
+  amount: number;
+};
+
+/**
+ * One account's postings inside the window, totalled per calendar month.
+ *
+ * Months the account saw no posting in are absent: the report fills the gaps,
+ * because only it knows which months the window covers.
+ */
+export function accountMonthTotals(
+  db: LedgerDb,
+  auth: LedgerAuth,
+  accountId: number,
+  window: DayWindow,
+): AccountMonthRow[] {
+  const postingAccess = auth.rowSecurity.forTable(postings);
+  const transactionAccess = auth.rowSecurity.forTable(transactions);
+  const month = sql<string>`substr(${transactionsTable.date}, 1, 7)`;
+
+  return db
+    .select({
+      month,
+      entries: sql<number>`count(distinct ${transactionsTable.id})`,
+      debits: sql<number>`coalesce(sum(max(${postingsTable.amount}, 0)), 0)`,
+      credits: sql<number>`coalesce(-sum(min(${postingsTable.amount}, 0)), 0)`,
+      amount: sql<number>`coalesce(sum(${postingsTable.amount}), 0)`,
+    })
+    .from(postingsTable)
+    .innerJoin(
+      transactionsTable,
+      and(
+        eq(transactionsTable.id, postingsTable.transaction_id),
+        transactionAccess.ownedRows(inWindow(window)),
+      ),
+    )
+    .where(postingAccess.ownedRows(eq(postingsTable.account_id, accountId)))
+    .groupBy(month)
+    .orderBy(month)
+    .all();
+}
+
 export type JournalTransactionRow = {
   id: number;
   date: string;

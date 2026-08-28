@@ -14,6 +14,7 @@ const reports = [
   { label: "Balances", to: "/reports/balances" },
   { label: "Profit & Loss", to: "/reports/profit-loss" },
   { label: "Spending against budget", to: "/reports/spending" },
+  { label: "Account by month", to: "/reports/account-months" },
   { label: "Account register", to: "/reports/register" },
 ];
 

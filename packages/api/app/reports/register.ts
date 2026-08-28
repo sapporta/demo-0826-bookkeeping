@@ -10,7 +10,6 @@ import { normalBalanceSign, reportsContract, roundMoney } from "bookkeeping-shar
 import {
   balanceBefore,
   registerRows,
-  visibleAccount,
   type AccountRow,
   type RegisterRow,
 } from "../../modules/ledger/db/ledger-store.js";
@@ -20,6 +19,7 @@ import {
   hiddenColumn,
   moneyColumn,
   READ_REPORTS,
+  readAccount,
   readPeriod,
   windowLabel,
   type ReportClock,
@@ -31,13 +31,9 @@ export function registerRegister(api: TsRestApi<SapportaEnv>, clock: ReportClock
     const read = readPeriod(request.query, workspaceTimeZone(auth), clock.now());
     if (!read.ok) return read.response;
     const db = c.get("db");
-    const account = visibleAccount(db, auth, request.query.account_id);
-    if (account === undefined) {
-      return {
-        status: 404,
-        body: { error: "Account not found", code: "ACCOUNT_NOT_FOUND" },
-      };
-    }
+    const found = readAccount(db, auth, request.query.account_id);
+    if (!found.ok) return found.response;
+    const { account } = found;
     const { window } = read;
     return {
       status: 200,

@@ -11,7 +11,13 @@ import {
 import type { GridDatasetColumn } from "@sapporta/shared/grid-dataset";
 import { Temporal, type TimeZone } from "@sapporta/shared/temporal";
 import { normalBalanceSign, roundMoney, type AccountType } from "bookkeeping-shared";
-import type { DayWindow } from "../../modules/ledger/db/ledger-store.js";
+import {
+  visibleAccount,
+  type AccountRow,
+  type DayWindow,
+  type LedgerAuth,
+  type LedgerDb,
+} from "../../modules/ledger/db/ledger-store.js";
 
 export const READ_REPORTS = { action: "read", subject: "reports" } as const;
 
@@ -53,6 +59,33 @@ export function readPeriod(
   }
 }
 
+export type AccountRead =
+  | { ok: true; account: AccountRow }
+  | { ok: false; response: { status: 404; body: ErrorBody } };
+
+/**
+ * The account a report was asked about, or the answer for one the caller
+ * cannot see. An account nobody may read and an account that does not exist
+ * are the same answer, so neither reveals the other.
+ */
+export function readAccount(
+  db: LedgerDb,
+  auth: LedgerAuth,
+  accountId: number,
+): AccountRead {
+  const account = visibleAccount(db, auth, accountId);
+  if (account === undefined) {
+    return {
+      ok: false,
+      response: {
+        status: 404,
+        body: { error: "Account not found", code: "ACCOUNT_NOT_FOUND" },
+      },
+    };
+  }
+  return { ok: true, account };
+}
+
 /** How a report names the window it covers. */
 export function windowLabel({ from, to }: DayWindow): string {
   return from === null && to === null
@@ -65,6 +98,37 @@ export function monthWindow(month: string): { from: string; to: string } {
   const first = Temporal.PlainYearMonth.from(month).toPlainDate({ day: 1 });
   const last = first.add({ months: 1 }).subtract({ days: 1 });
   return { from: first.toString(), to: last.toString() };
+}
+
+/** Every calendar month the window touches, oldest first; null when open. */
+export function monthsCovered(window: DayWindow): string[] | null {
+  if (window.from === null || window.to === null) return null;
+  const last = Temporal.PlainDate.from(window.to).toPlainYearMonth();
+  const months: string[] = [];
+  for (
+    let month = Temporal.PlainDate.from(window.from).toPlainYearMonth();
+    Temporal.PlainYearMonth.compare(month, last) <= 0;
+    month = month.add({ months: 1 })
+  ) {
+    months.push(month.toString());
+  }
+  return months;
+}
+
+/**
+ * The days of `month` that lie inside `window`.
+ *
+ * A month at either edge of a report is only partly covered by it, and a
+ * drill-down into that month has to ask for the same days the summary
+ * counted — otherwise the total a reader clicked stops matching the rows
+ * they land on.
+ */
+export function monthWithin(month: string, window: DayWindow): { from: string; to: string } {
+  const bounds = monthWindow(month);
+  return {
+    from: window.from !== null && window.from > bounds.from ? window.from : bounds.from,
+    to: window.to !== null && window.to < bounds.to ? window.to : bounds.to,
+  };
 }
 
 /**
