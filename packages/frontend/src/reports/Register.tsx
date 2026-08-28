@@ -13,28 +13,30 @@ import {
   ReportToolbar,
   type ReportStat,
 } from "@sapporta/frontend/report";
-import { allTime, serializeDateRange, type DateRangeState } from "@sapporta/shared/daterange";
+import { allTime, serializeDateRange } from "@sapporta/shared/daterange";
 import type { GridDataset } from "@sapporta/shared/grid-dataset";
 import { reportsApi } from "../api";
 import { formatMoney } from "../entries/money";
 import { fieldError } from "./report-params";
-import { periodIssue, readPeriod, useReportUrlDraft, type UrlRead } from "./report-screen";
+import {
+  periodIssue,
+  readAccountPeriodParams,
+  useReportUrlDraft,
+  type AccountPeriodParams,
+} from "./report-screen";
 import { useReportDataset, type ReportDatasetLoadContext } from "./use-report-dataset";
 
-type RegisterParams = { accountId: number | null; period: DateRangeState };
+// A register is opened for a window someone names, so it starts unbounded.
+const defaultPeriod = allTime();
 
-function readRegisterParams(raw: Record<string, string>): UrlRead<RegisterParams> {
-  const errors: UrlRead<RegisterParams>["errors"] = [];
-  const period = readPeriod(raw, allTime(), errors, "period");
-  let accountId: number | null = null;
-  if (raw.account_id !== undefined && raw.account_id !== "") {
-    if (/^\d+$/.test(raw.account_id)) accountId = Number(raw.account_id);
-    else errors.push({ field: "accountId", message: "The account in the URL is invalid." });
-  }
-  return { params: { accountId, period }, errors };
+function readRegisterParams(raw: Record<string, string>) {
+  return readAccountPeriodParams(raw, defaultPeriod);
 }
 
-async function loadRegister(input: RegisterParams, context: ReportDatasetLoadContext) {
+async function loadRegister(
+  input: AccountPeriodParams,
+  context: ReportDatasetLoadContext,
+) {
   return reportsApi.register({
     query: { account_id: input.accountId ?? 0, ...serializeDateRange(input.period, "period") },
     fetchOptions: { signal: context.signal },
@@ -68,7 +70,7 @@ export function Register() {
   const input =
     urlState.errors.length === 0 && urlState.params.accountId !== null ? urlState.params : null;
   const report = useReportDataset({ input, load: loadRegister });
-  const draftIssue = periodIssue<RegisterParams>(draft.period, "period");
+  const draftIssue = periodIssue<AccountPeriodParams>(draft.period, "period");
 
   function run() {
     apply({

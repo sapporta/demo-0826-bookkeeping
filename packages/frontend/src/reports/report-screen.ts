@@ -87,6 +87,33 @@ export function periodIssue<T>(
 }
 
 /**
+ * What a report about one account over a period reads from the URL: the
+ * client side of the `accountPeriodQuery` the register and the monthly
+ * summary both take, so the two cannot drift on what an account id is or
+ * what to say when the URL holds a bad one.
+ */
+export type AccountPeriodParams = {
+  accountId: number | null;
+  period: DateRangeState;
+};
+
+export function readAccountPeriodParams(
+  raw: Record<string, string>,
+  fallback: DateRangeState,
+): UrlRead<AccountPeriodParams> {
+  const errors: UrlRead<AccountPeriodParams>["errors"] = [];
+  const period = readPeriod(raw, fallback, errors, "period");
+  let accountId: number | null = null;
+  if (raw.account_id !== undefined && raw.account_id !== "") {
+    if (/^\d+$/.test(raw.account_id)) accountId = Number(raw.account_id);
+    else {
+      errors.push({ field: "accountId", message: "The account in the URL is invalid." });
+    }
+  }
+  return { params: { accountId, period }, errors };
+}
+
+/**
  * A report screen's address, carrying the period the reader is looking at.
  *
  * The same addresses the server binds its declarative drill-down links to;

@@ -16,7 +16,7 @@ import {
   ReportToolbar,
   type ReportStat,
 } from "@sapporta/frontend/report";
-import { relative, serializeDateRange, type DateRangeState } from "@sapporta/shared/daterange";
+import { relative, serializeDateRange } from "@sapporta/shared/daterange";
 import type { GridDataset } from "@sapporta/shared/grid-dataset";
 import { reportsApi } from "../api";
 import { formatMoney } from "../entries/money";
@@ -26,32 +26,21 @@ import {
   datasetNumber,
   periodIssue,
   profitLossHref,
-  readPeriod,
+  readAccountPeriodParams,
   useReportUrlDraft,
-  type UrlRead,
+  type AccountPeriodParams,
 } from "./report-screen";
 import { useReportDataset, type ReportDatasetLoadContext } from "./use-report-dataset";
-
-type AccountMonthsParams = { accountId: number | null; period: DateRangeState };
 
 // The same year the statement this drills down from covers.
 const defaultPeriod = relative("1y");
 
-function readAccountMonthsParams(
-  raw: Record<string, string>,
-): UrlRead<AccountMonthsParams> {
-  const errors: UrlRead<AccountMonthsParams>["errors"] = [];
-  const period = readPeriod(raw, defaultPeriod, errors, "period");
-  let accountId: number | null = null;
-  if (raw.account_id !== undefined && raw.account_id !== "") {
-    if (/^\d+$/.test(raw.account_id)) accountId = Number(raw.account_id);
-    else errors.push({ field: "accountId", message: "The account in the URL is invalid." });
-  }
-  return { params: { accountId, period }, errors };
+function readAccountMonthsParams(raw: Record<string, string>) {
+  return readAccountPeriodParams(raw, defaultPeriod);
 }
 
 async function loadAccountMonths(
-  input: AccountMonthsParams,
+  input: AccountPeriodParams,
   context: ReportDatasetLoadContext,
 ) {
   return reportsApi.accountMonths({
@@ -102,7 +91,7 @@ export function AccountMonths() {
       ? urlState.params
       : null;
   const report = useReportDataset({ input, load: loadAccountMonths });
-  const draftIssue = periodIssue<AccountMonthsParams>(draft.period, "period");
+  const draftIssue = periodIssue<AccountPeriodParams>(draft.period, "period");
 
   function run() {
     apply({
