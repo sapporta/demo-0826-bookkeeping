@@ -1,12 +1,13 @@
 // What the report screens share: URL-backed parameters with a local draft
-// the toolbar edits, the period codec, and the register address other
-// reports drill into.
+// the toolbar edits, the period codec, and the addresses the reports drill
+// between.
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { buildSearchParams, type UrlQueryObject } from "@sapporta/frontend/report";
 import type { GridDataset } from "@sapporta/shared/grid-dataset";
 import {
+  custom,
   dateRangeFieldNames,
   parseDateRange,
   serializeDateRange,
@@ -86,13 +87,57 @@ export function periodIssue<T>(
   return null;
 }
 
+/**
+ * A report screen's address, carrying the period the reader is looking at.
+ *
+ * The same addresses the server binds its declarative drill-down links to;
+ * a screen builds one when it links somewhere the dataset does not.
+ */
+function reportHref(
+  path: string,
+  query: UrlQueryObject,
+  period?: DateRangeState,
+): string {
+  const search = buildSearchParams({
+    ...query,
+    ...(period ? serializeDateRange(period, "period") : {}),
+  });
+  return `${path}?${search.toString()}`;
+}
+
 /** The register for one account, over the period the reader is looking at. */
 export function registerHref(accountId: number, period?: DateRangeState): string {
-  const query: UrlQueryObject = {
-    account_id: accountId,
-    ...(period ? serializeDateRange(period, "period") : {}),
-  };
-  return `/reports/register?${buildSearchParams(query).toString()}`;
+  return reportHref("/reports/register", { account_id: accountId }, period);
+}
+
+/** One account month by month, over the period the reader is looking at. */
+export function accountMonthsHref(
+  accountId: number,
+  period?: DateRangeState,
+): string {
+  return reportHref("/reports/account-months", { account_id: accountId }, period);
+}
+
+/** The statement the drill-down starts from. */
+export function profitLossHref(period?: DateRangeState): string {
+  return reportHref("/reports/profit-loss", {}, period);
+}
+
+/**
+ * The calendar year a drilled-into period sits in, or null when it names no
+ * start to take a year from.
+ *
+ * Months belong to a year the way days belong to a month, so a register
+ * showing one month goes back up to that account's year rather than to
+ * whatever rolling window the reader happened to arrive through.
+ */
+export function enclosingYear(period: DateRangeState): DateRangeState | null {
+  if (period.type !== "custom" || period.start === null) return null;
+  const year = period.start.year;
+  return custom(
+    Temporal.PlainDate.from({ year, month: 1, day: 1 }),
+    Temporal.PlainDate.from({ year, month: 12, day: 31 }),
+  );
 }
 
 /** One number out of a dataset, by row key and column. */

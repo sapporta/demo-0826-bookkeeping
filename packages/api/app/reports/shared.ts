@@ -166,6 +166,28 @@ export function registerLink(bind: Record<string, string>): NavLink {
   return { kind: "report", report: "register", bind, label: "Account register" };
 }
 
+/** Opens one account's month-by-month summary over the bound period. */
+export function accountMonthsLink(bind: Record<string, string>): NavLink {
+  return {
+    kind: "report",
+    report: "account-months",
+    bind,
+    label: "Month by month",
+  };
+}
+
+/**
+ * The bind entries a drill-down uses to carry this report's window forward.
+ * An open edge is left out: a link binding a null column resolves to nothing
+ * and would silently disappear from every row.
+ */
+export function windowBind(window: DayWindow): Record<string, string> {
+  return {
+    ...(window.from === null ? {} : { period_from: "period_from" }),
+    ...(window.to === null ? {} : { period_to: "period_to" }),
+  };
+}
+
 export const editEntryLink: NavLink = {
   kind: "url",
   href: "/transactions/{transaction_id}/edit",

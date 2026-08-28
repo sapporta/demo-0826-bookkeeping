@@ -1,7 +1,15 @@
 /**
  * Profit & Loss: income and expenses by account over a period, and the net.
+ *
+ * The account lines drill into the account month by month. That link is
+ * declared by the dataset the server returns, so there is nothing to resolve
+ * here.
  */
-import { relative, type DateRangeState } from "@sapporta/shared/daterange";
+import {
+  relative,
+  serializeDateRange,
+  type DateRangeState,
+} from "@sapporta/shared/daterange";
 import {
   DateRangeField,
   ReportError,
@@ -11,10 +19,8 @@ import {
   ReportSummaryStats,
   ReportTimeZoneNote,
   ReportToolbar,
-  type ReportCellLinkResolvers,
   type ReportStat,
 } from "@sapporta/frontend/report";
-import { serializeDateRange } from "@sapporta/shared/daterange";
 import type { GridDataset } from "@sapporta/shared/grid-dataset";
 import { reportsApi } from "../api";
 import { formatMoney } from "../entries/money";
@@ -23,7 +29,6 @@ import {
   datasetNumber,
   periodIssue,
   readPeriod,
-  registerHref,
   useReportUrlDraft,
   type UrlRead,
 } from "./report-screen";
@@ -51,21 +56,6 @@ async function loadProfitLoss(
   });
 }
 
-/** Account rows open the register for the same period. */
-const profitLossLinks: ReportCellLinkResolvers<ProfitLossParams> = {
-  account: {
-    cell: {
-      account: ({ node, input }) => {
-        const id = node.columns.account_id;
-        if (typeof id !== "number") return [];
-        return [
-          { label: "Account register", href: registerHref(id, input?.period), icon: "report" },
-        ];
-      },
-    },
-  },
-};
-
 function profitLossStats(dataset: GridDataset): ReportStat[] {
   const income = datasetNumber(dataset, "type:income", "amount") ?? 0;
   const expenses = datasetNumber(dataset, "type:expense", "amount") ?? 0;
@@ -86,7 +76,7 @@ export function ProfitLoss() {
   return (
     <ReportScreenFrame
       title="Profit & Loss"
-      subtitle="What came in and what went out over a period."
+      subtitle="What came in and what went out. Open an account to see its months."
     >
       <ReportToolbar
         actions={
@@ -120,7 +110,6 @@ export function ProfitLoss() {
             ) : (
               <ReportGridDataset
                 dataset={report.dataset}
-                links={profitLossLinks}
                 linkContext={input ? { input } : undefined}
               />
             )}

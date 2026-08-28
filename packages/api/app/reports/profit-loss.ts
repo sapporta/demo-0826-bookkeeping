@@ -1,6 +1,10 @@
 /**
  * Profit & Loss: what the household earned and what it spent over a period,
  * every income and expense account under its heading, and the net at the foot.
+ *
+ * The statement is the top of the drill-down: an account line opens that
+ * account month by month over the same period, and from there the register
+ * and the entry itself.
  */
 import type { TsRestApi, SapportaEnv } from "@sapporta/server";
 import { workspaceTimeZone } from "@sapporta/server";
@@ -18,11 +22,13 @@ import {
 } from "../../modules/ledger/db/ledger-store.js";
 import { requireAuthorizedWorkspaceData } from "../../project-auth/index.js";
 import {
+  accountMonthsLink,
   displayBalance,
   hiddenColumn,
   moneyColumn,
   READ_REPORTS,
   readPeriod,
+  windowBind,
   windowLabel,
   type ReportClock,
 } from "./shared.js";
@@ -59,6 +65,8 @@ export function profitLossDataset({ rows, from, to }: ProfitLossInput): GridData
       levelName: "account",
       columns: {
         account_id: row.id,
+        period_from: from,
+        period_to: to,
         account: row.name,
         amount: displayBalance(type, row.balance),
       },
@@ -70,15 +78,37 @@ export function profitLossDataset({ rows, from, to }: ProfitLossInput): GridData
     nodes.push({
       rowKey: `type:${type}`,
       levelName: "type",
-      columns: { account_id: null, account: ACCOUNT_TYPE_LABELS[type], amount: total },
+      columns: {
+        account_id: null,
+        period_from: from,
+        period_to: to,
+        account: ACCOUNT_TYPE_LABELS[type],
+        amount: total,
+      },
       children: { account: children },
     });
   }
 
   const net = roundMoney((totals.get("income") ?? 0) - (totals.get("expense") ?? 0));
+
+  // A heading row carries no account id, so the drill-down resolves on the
+  // account lines and is withheld from the two totals above them.
   const columns = [
     hiddenColumn("account_id", "number"),
-    { id: "account", label: "Account", kind: "text" as const, minWidth: 36 },
+    hiddenColumn("period_from", "date"),
+    hiddenColumn("period_to", "date"),
+    {
+      id: "account",
+      label: "Account",
+      kind: "text" as const,
+      minWidth: 36,
+      links: [
+        accountMonthsLink({
+          account_id: "account_id",
+          ...windowBind({ from, to }),
+        }),
+      ],
+    },
     moneyColumn("amount", "Amount"),
   ];
 

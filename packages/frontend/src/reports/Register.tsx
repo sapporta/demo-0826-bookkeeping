@@ -18,7 +18,15 @@ import type { GridDataset } from "@sapporta/shared/grid-dataset";
 import { reportsApi } from "../api";
 import { formatMoney } from "../entries/money";
 import { fieldError } from "./report-params";
-import { periodIssue, readPeriod, useReportUrlDraft, type UrlRead } from "./report-screen";
+import { ReportTrail } from "./ReportTrail";
+import {
+  accountMonthsHref,
+  enclosingYear,
+  periodIssue,
+  readPeriod,
+  useReportUrlDraft,
+  type UrlRead,
+} from "./report-screen";
 import { useReportDataset, type ReportDatasetLoadContext } from "./use-report-dataset";
 
 type RegisterParams = { accountId: number | null; period: DateRangeState };
@@ -69,6 +77,13 @@ export function Register() {
     urlState.errors.length === 0 && urlState.params.accountId !== null ? urlState.params : null;
   const report = useReportDataset({ input, load: loadRegister });
   const draftIssue = periodIssue<RegisterParams>(draft.period, "period");
+  // Up from a register is the same account's months. A register showing one
+  // month goes back to that month's year; one showing a window of its own
+  // goes back to the same window.
+  const upToMonths =
+    input === null || input.accountId === null
+      ? null
+      : accountMonthsHref(input.accountId, enclosingYear(input.period) ?? input.period);
 
   function run() {
     apply({
@@ -78,7 +93,15 @@ export function Register() {
   }
 
   return (
-    <ReportScreenFrame title="Account register" subtitle="Every posting to one account, with the running balance.">
+    <ReportScreenFrame
+      title="Account register"
+      subtitle="Every posting to one account, with the running balance."
+      actions={
+        upToMonths === null ? undefined : (
+          <ReportTrail to={upToMonths} label="Month by month" />
+        )
+      }
+    >
       <ReportToolbar
         actions={
           <ReportRunButton

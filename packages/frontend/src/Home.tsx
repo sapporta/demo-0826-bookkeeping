@@ -50,8 +50,8 @@ export function Home() {
           }
         >
           Balances is what you own and owe today; profit &amp; loss is income
-          against expenses over a period. Open any account to see every entry
-          that touched it.
+          against expenses over a period. Open an account line to see its
+          months, a month to see its entries, and an entry to change it.
         </Section>
 
         <Section

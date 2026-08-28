@@ -21,9 +21,11 @@ import type { GridDataset } from "@sapporta/shared/grid-dataset";
 import { reportsApi } from "../api";
 import { formatMoney } from "../entries/money";
 import { fieldError } from "./report-params";
+import { ReportTrail } from "./ReportTrail";
 import {
   datasetNumber,
   periodIssue,
+  profitLossHref,
   readPeriod,
   useReportUrlDraft,
   type UrlRead,
@@ -112,6 +114,9 @@ export function AccountMonths() {
     <ReportScreenFrame
       title="Account by month"
       subtitle="One account's total for each month. Open a month to see its entries."
+      actions={
+        <ReportTrail to={profitLossHref(urlState.params.period)} label="Profit & Loss" />
+      }
     >
       <ReportToolbar
         actions={
