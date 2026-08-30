@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sapporta/frontend": "0.6.0",
-    "@sapporta/grid": "0.5.0",
+    "@sapporta/frontend": "0.7.0",
+    "@sapporta/grid": "0.6.0",
     "@sapporta/rest-core": "3.52.2",
-    "@sapporta/shared": "0.3.0",
-    "@sapporta/ui": "0.2.13",
+    "@sapporta/shared": "0.3.2",
+    "@sapporta/ui": "0.2.15",
     "@tanstack/react-form": "1.33.2",
     "@tanstack/react-query": "5.101.4",
     "bookkeeping-shared": "workspace:*",

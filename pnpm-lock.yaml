@@ -5,10 +5,10 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@sapporta/honest': 0.3.12
-  '@sapporta/shared': 0.3.0
-  '@sapporta/ui': 0.2.13
-  '@sapporta/grid': 0.5.0
+  '@sapporta/honest': 0.3.14
+  '@sapporta/shared': 0.3.2
+  '@sapporta/ui': 0.2.15
+  '@sapporta/grid': 0.6.0
   better-sqlite3: 12.11.1
   drizzle-orm: 0.45.2
   '@types/better-sqlite3': 7.6.13
@@ -43,17 +43,17 @@ importers:
         specifier: 0.5.1
         version: 0.5.1
       '@sapporta/honest':
-        specifier: 0.3.12
-        version: 0.3.12(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3)
+        specifier: 0.3.14
+        version: 0.3.14(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3)
       '@sapporta/rest-core':
         specifier: 3.52.2
         version: 3.52.2(@types/node@26.2.0)(zod@4.4.3)
       '@sapporta/server':
-        specifier: 0.6.0
-        version: 0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/honest@0.3.12(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3))(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(better-sqlite3@12.11.1)(drizzle-orm@0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.3))(hono@4.12.29)(zod@4.4.3)
+        specifier: 0.6.2
+        version: 0.6.2(@js-temporal/polyfill@0.5.1)(@sapporta/honest@0.3.14(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3))(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(better-sqlite3@12.11.1)(drizzle-orm@0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.3))(hono@4.12.29)(zod@4.4.3)
       '@sapporta/shared':
-        specifier: 0.3.0
-        version: 0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
+        specifier: 0.3.2
+        version: 0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
       better-auth:
         specifier: 1.7.1
         version: 1.7.1(better-sqlite3@12.11.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@3.2.7(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.12))
@@ -101,20 +101,20 @@ importers:
         specifier: 0.5.1
         version: 0.5.1
       '@sapporta/frontend':
-        specifier: 0.6.0
-        version: 0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@tanstack/react-form@1.33.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.4(react@19.2.7))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react-router-dom@7.18.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))
+        specifier: 0.7.0
+        version: 0.7.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@tanstack/react-form@1.33.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.4(react@19.2.7))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react-router-dom@7.18.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))
       '@sapporta/grid':
-        specifier: 0.5.0
-        version: 0.5.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))
+        specifier: 0.6.0
+        version: 0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))
       '@sapporta/rest-core':
         specifier: 3.52.2
         version: 3.52.2(@types/node@26.2.0)(zod@4.4.3)
       '@sapporta/shared':
-        specifier: 0.3.0
-        version: 0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
+        specifier: 0.3.2
+        version: 0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
       '@sapporta/ui':
-        specifier: 0.2.13
-        version: 0.2.13(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: 0.2.15
+        version: 0.2.15(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-form':
         specifier: 1.33.2
         version: 1.33.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -177,8 +177,8 @@ importers:
         specifier: 3.52.2
         version: 3.52.2(@types/node@26.2.0)(zod@4.4.3)
       '@sapporta/shared':
-        specifier: 0.3.0
-        version: 0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
+        specifier: 0.3.2
+        version: 0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -1067,8 +1067,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sapporta/frontend@0.6.0':
-    resolution: {integrity: sha512-EFmGShaDxDNIV68flkwpMRY5w96I0UJj3g4P20YLebWQ6s4C3h8tv4cwGCaYErmiAr6JVT6GD/k+CV6d5urhjg==}
+  '@sapporta/frontend@0.7.0':
+    resolution: {integrity: sha512-G5v22aB83R6vc+VvTPIMLe1zXf0Zv6oFu4wDQVZmrSiV3+amrm03tonGWl8IB/c2HkV4FwBPqKZ+3yz8jVaEMQ==}
     peerDependencies:
       '@sapporta/rest-core': 3.52.2
       '@tanstack/react-form': 1.33.2
@@ -1079,15 +1079,15 @@ packages:
       zod: 4.4.3
       zustand: 5.0.14
 
-  '@sapporta/grid@0.5.0':
-    resolution: {integrity: sha512-8PhmFjA4LVAYmz5rQuPc/Kic3SMqDWo49fGuw/LMrM41DWY7L5qUvpIthI7bILRXFkL8BncusZs2962H5Upzxw==}
+  '@sapporta/grid@0.6.0':
+    resolution: {integrity: sha512-ae9fto8fYQkwf3p6wsw5ppr++pMfDEY4n59UItpZois5rtyhvPpUu0DEEHrI6PGLlt+iHvJKER2h7joLoNY5gg==}
     peerDependencies:
       react: 19.2.7
       react-dom: 19.2.7
       zustand: 5.0.14
 
-  '@sapporta/honest@0.3.12':
-    resolution: {integrity: sha512-c+ct8gSPi2UckRiz4oemC+4PDgVKerVaJ02O4bNT9T/DPNw7YiBueujjvQQmbxhiKqspiFdYh1FTF5oXOExx3g==}
+  '@sapporta/honest@0.3.14':
+    resolution: {integrity: sha512-27AgYq7vdGL0rzw/OntyGK4xdyPzZKUs1axaVdX82dcJK/MEDDW8huB7X60Fht6ktvcLrZT8PZ0jWmvPSjjlng==}
     peerDependencies:
       '@sapporta/rest-core': 3.52.2
       hono: 4.12.29
@@ -1108,26 +1108,26 @@ packages:
       '@sapporta/rest-core': 3.52.2
       zod: 4.4.3
 
-  '@sapporta/server@0.6.0':
-    resolution: {integrity: sha512-emtbLmZI8mJ3Ui9J+qs1swlbv3vZ2nXIFfp6ip9Vu2MMDGabTIhpAj+WOMVpyB5/IUhz1iGyLiqVayNuvPf6Ww==}
+  '@sapporta/server@0.6.2':
+    resolution: {integrity: sha512-NNYX4oate3RNvB/ufTe9llGwzRW2kiud8sliymxjqT3pq4iG86ceP6Hu+DwW4glwfE4q+/P5nBR2SHJVwn2stg==}
     hasBin: true
     peerDependencies:
-      '@sapporta/honest': 0.3.12
+      '@sapporta/honest': 0.3.14
       '@sapporta/rest-core': 3.52.2
       better-sqlite3: 12.11.1
       drizzle-orm: 0.45.2
       hono: 4.12.29
       zod: 4.4.3
 
-  '@sapporta/shared@0.3.0':
-    resolution: {integrity: sha512-hbs+wz4UDfs0Y+sM7NmJwpjI3IST/VMXn96uFZjmDzcXRRsWQqvxrJG30rZ0GLwpV+OMKqhY8cjC+34gvu+PiA==}
+  '@sapporta/shared@0.3.2':
+    resolution: {integrity: sha512-7NahxxeQ4D087q57F1uuND6igXzCHKUHw51HvQTlzQVKjPtAXTuGfeOLIRAZsC0p3UHtg54Z3PXsPYfzDdJpzA==}
     peerDependencies:
       '@js-temporal/polyfill': 0.5.1
       '@sapporta/rest-core': 3.52.2
       zod: 4.4.3
 
-  '@sapporta/ui@0.2.13':
-    resolution: {integrity: sha512-ZdZtkHQQreRpw1AtR3yK2S+bUr1cxeodJ9nTJ8hCKxNjloge6hO4b+MYYe7BS1UrS7ug1ZwtRBPS7v0tV0Z+Rg==}
+  '@sapporta/ui@0.2.15':
+    resolution: {integrity: sha512-vqWnCRyuxJ9qvpkWUUkaoiPTBN6TcoMPQnooIJ4FLWo+nsRWbmPuuzgUvnLc3Ozwrv+4UIWGB2h4REiE33/SPw==}
     peerDependencies:
       class-variance-authority: ^0.7.1
       clsx: ^2.1.1
@@ -2897,12 +2897,12 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.62.5':
     optional: true
 
-  '@sapporta/frontend@0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@tanstack/react-form@1.33.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.4(react@19.2.7))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react-router-dom@7.18.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))':
+  '@sapporta/frontend@0.7.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@tanstack/react-form@1.33.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@tanstack/react-query@5.101.4(react@19.2.7))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react-router-dom@7.18.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))':
     dependencies:
-      '@sapporta/grid': 0.5.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))
+      '@sapporta/grid': 0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))
       '@sapporta/rest-core': 3.52.2(@types/node@26.2.0)(zod@4.4.3)
-      '@sapporta/shared': 0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
-      '@sapporta/ui': 0.2.13(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@sapporta/shared': 0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
+      '@sapporta/ui': 0.2.15(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-form': 1.33.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tanstack/react-query': 5.101.4(react@19.2.7)
       immer: 11.1.18
@@ -2921,10 +2921,10 @@ snapshots:
       - clsx
       - date-fns
 
-  '@sapporta/grid@0.5.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))':
+  '@sapporta/grid@0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)(zustand@5.0.14(@types/react@19.2.18)(immer@11.1.18)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)))':
     dependencies:
-      '@sapporta/shared': 0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
-      '@sapporta/ui': 0.2.13(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@sapporta/shared': 0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
+      '@sapporta/ui': 0.2.15(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       lucide-react: 1.34.0(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -2939,7 +2939,7 @@ snapshots:
       - date-fns
       - zod
 
-  '@sapporta/honest@0.3.12(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3)':
+  '@sapporta/honest@0.3.14(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3)':
     dependencies:
       '@sapporta/rest-core': 3.52.2(@types/node@26.2.0)(zod@4.4.3)
       '@sapporta/rest-open-api': 3.52.2(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
@@ -2958,12 +2958,12 @@ snapshots:
       openapi3-ts: 2.0.2
       zod: 4.4.3
 
-  '@sapporta/server@0.6.0(@js-temporal/polyfill@0.5.1)(@sapporta/honest@0.3.12(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3))(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(better-sqlite3@12.11.1)(drizzle-orm@0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.3))(hono@4.12.29)(zod@4.4.3)':
+  '@sapporta/server@0.6.2(@js-temporal/polyfill@0.5.1)(@sapporta/honest@0.3.14(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3))(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(better-sqlite3@12.11.1)(drizzle-orm@0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)(kysely@0.29.3))(hono@4.12.29)(zod@4.4.3)':
     dependencies:
       '@hono/node-server': 2.0.8(hono@4.12.29)
-      '@sapporta/honest': 0.3.12(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3)
+      '@sapporta/honest': 0.3.14(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(hono@4.12.29)(zod@4.4.3)
       '@sapporta/rest-core': 3.52.2(@types/node@26.2.0)(zod@4.4.3)
-      '@sapporta/shared': 0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
+      '@sapporta/shared': 0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)
       better-sqlite3: 12.11.1
       commander: 15.0.0
       drizzle-kit: 0.31.10
@@ -2975,13 +2975,13 @@ snapshots:
     transitivePeerDependencies:
       - '@js-temporal/polyfill'
 
-  '@sapporta/shared@0.3.0(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)':
+  '@sapporta/shared@0.3.2(@js-temporal/polyfill@0.5.1)(@sapporta/rest-core@3.52.2(@types/node@26.2.0)(zod@4.4.3))(zod@4.4.3)':
     dependencies:
       '@js-temporal/polyfill': 0.5.1
       '@sapporta/rest-core': 3.52.2(@types/node@26.2.0)(zod@4.4.3)
       zod: 4.4.3
 
-  '@sapporta/ui@0.2.13(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@sapporta/ui@0.2.15(@types/react@19.2.18)(class-variance-authority@0.7.1)(clsx@2.1.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@base-ui/react': 1.7.0(@types/react@19.2.18)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       class-variance-authority: 0.7.1

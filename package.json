@@ -4,6 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@11.1.1",
   "scripts": {
+    "favicons": "node scripts/build-favicons.mjs",
     "clean": "node scripts/clean-dist.mjs",
     "predev": "pnpm run clean && pnpm --filter ./packages/shared build",
     "dev": "node --env-file=.env.development scripts/dev.mjs",
